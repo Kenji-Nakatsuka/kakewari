@@ -9,10 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="ケイサンの壁" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>ケイサンの壁</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260602-6" />
-  <link rel="icon" href="icon.svg?v=20260602-6" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest?v=20260602-10" />
+  <link rel="icon" href="icon.svg?v=20260602-10" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="style.css?v=20260602-6" />
+  <link rel="stylesheet" href="style.css?v=20260602-10" />
 </head>
 <body>
   <main class="app">
@@ -23,23 +23,41 @@
         <h1>ケイサンの壁</h1>
         <p>レベルをえらんでスタート</p>
       </div>
-      <div class="level-options" aria-label="レベル選択">
-        <button data-level="elementary" type="button">
-          <b>小学生向け</b>
-          <span>かけ算・わり算</span>
-        </button>
-        <button data-level="hard" type="button">
-          <b>小学生向け 難しい</b>
-          <span>2桁と2桁のかけ算・わり算</span>
-        </button>
-        <button data-level="oni" type="button">
-          <b>小学生向け 鬼</b>
-          <span>3桁と2桁のかけ算・わり算</span>
-        </button>
-        <button data-level="middle" type="button">
-          <b>中学生向け</b>
-          <span>正の数・負の数の加減乗除</span>
-        </button>
+      <div class="course-groups" aria-label="レベル選択">
+        <section class="course-group">
+          <h2>小学生</h2>
+          <div class="level-options">
+            <button data-level="elementary" type="button">
+              <b>ふつう</b>
+              <span>かけ算・わり算</span>
+            </button>
+            <button data-level="hard" type="button">
+              <b>難しい</b>
+              <span>2桁と2桁</span>
+            </button>
+            <button data-level="oni" type="button">
+              <b>鬼</b>
+              <span>3桁と2桁</span>
+            </button>
+          </div>
+        </section>
+        <section class="course-group">
+          <h2>中学生</h2>
+          <div class="level-options">
+            <button data-level="middle" type="button">
+              <b>ふつう</b>
+              <span>正負の加減乗除</span>
+            </button>
+            <button data-level="middleHard" type="button">
+              <b>難しい</b>
+              <span>3つの数の計算</span>
+            </button>
+            <button data-level="middleOni" type="button">
+              <b>鬼</b>
+              <span>累乗入り</span>
+            </button>
+          </div>
+        </section>
       </div>
       <button class="ranking-toggle" id="showRankings" type="button">ランキングを見る</button>
     </section>
@@ -70,6 +88,10 @@
           <div class="feedback" id="feedback">テンキーで答えてね</div>
         </div>
       </div>
+    </section>
+
+    <section class="panel progress-panel game-ui" hidden>
+      <div class="progress-dots" id="progressDots" aria-label="進み具合"></div>
     </section>
 
     <aside class="panel controls game-ui" hidden>
@@ -107,6 +129,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260602-6"></script>
+  <script src="script.js?v=20260602-10"></script>
 </body>
 </html>

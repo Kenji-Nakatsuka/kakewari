@@ -39,7 +39,7 @@
       width: min(520px, 100%);
       height: calc(100svh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
       display: grid;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto auto 1fr;
       gap: 6px;
     }
 
@@ -98,10 +98,10 @@
     }
 
     .title-screen {
-      padding: clamp(22px, 7vw, 36px);
+      padding: clamp(16px, 5vw, 30px);
       display: grid;
       align-content: center;
-      gap: 22px;
+      gap: 14px;
       text-align: center;
       overflow: auto;
     }
@@ -113,21 +113,40 @@
     }
 
     .title-screen p {
-      margin: 10px 0 0;
+      margin: 7px 0 0;
       color: var(--muted);
       font-size: clamp(16px, 4.5vw, 20px);
       font-weight: 900;
     }
 
+    .course-groups {
+      display: grid;
+      gap: 12px;
+    }
+
+    .course-group {
+      display: grid;
+      gap: 7px;
+      text-align: left;
+    }
+
+    .course-group h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
     .level-options {
       display: grid;
-      gap: 10px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
     }
 
     .level-options button {
       border: 0;
-      border-radius: 18px;
-      padding: 18px 14px;
+      border-radius: 14px;
+      padding: 12px 8px;
       color: var(--ink);
       background: white;
       box-shadow: 0 5px 0 #d6ddec, 0 10px 18px rgba(36,48,71,.10);
@@ -144,7 +163,7 @@
 
     .level-options b {
       display: block;
-      font-size: clamp(22px, 6.5vw, 30px);
+      font-size: clamp(17px, 5.2vw, 24px);
       line-height: 1.1;
     }
 
@@ -152,7 +171,7 @@
       display: block;
       margin-top: 4px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 900;
     }
 
@@ -195,7 +214,7 @@
 
     .ranking-tabs {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 6px;
     }
 
@@ -302,14 +321,15 @@
     }
 
     .answer-box.correct-mark::after {
-      content: "○";
+      content: "正解！";
       position: absolute;
       inset: 50% auto auto 50%;
       z-index: 2;
       color: rgba(40, 166, 106, .9);
-      font-size: clamp(78px, 24vw, 128px);
+      font-size: clamp(52px, 17vw, 104px);
       font-weight: 900;
       line-height: 1;
+      white-space: nowrap;
       pointer-events: none;
       transform: translate(-50%, -50%) scale(.55) rotate(-10deg);
       animation: correct-mark .38s ease-out both;
@@ -336,14 +356,46 @@
 
     .feedback {
       margin-top: 5px;
-      min-height: 22px;
-      font-size: clamp(15px, 4.5vw, 20px);
+      min-height: 28px;
+      font-size: clamp(20px, 6vw, 30px);
       line-height: 1.1;
       font-weight: 950;
     }
 
     .feedback.good { color: var(--good); }
     .feedback.bad { color: var(--bad); }
+
+    .progress-panel {
+      padding: 3px 8px;
+      align-self: start;
+    }
+
+    .progress-dots {
+      display: grid;
+      grid-template-columns: repeat(10, 12px);
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .progress-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid #d6ddec;
+      background: white;
+      box-shadow: inset 0 -1px 0 rgba(36,48,71,.06);
+    }
+
+    .progress-dots span.done {
+      border-color: var(--good);
+      background: var(--good);
+      box-shadow: inset 0 -2px 0 rgba(36,48,71,.18);
+    }
+
+    .progress-dots span.current {
+      border-color: var(--sun);
+      background: #fff2bc;
+    }
 
     .controls {
       padding: 8px;
@@ -593,17 +645,21 @@
       .app {
         width: min(980px, 100%);
         grid-template-columns: 1.05fr .95fr;
-        grid-template-rows: 1fr;
+        grid-template-rows: 1fr auto;
         height: auto;
         min-height: 560px;
       }
       .app.title-mode {
-        width: min(560px, 100%);
+        width: min(760px, 100%);
         grid-template-columns: 1fr;
         min-height: 560px;
       }
-      .main { min-height: 520px; }
-      .controls { align-self: stretch; }
+      .main { min-height: 520px; grid-column: 1; grid-row: 1; }
+      .progress-panel {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+      .controls { align-self: stretch; grid-column: 2; grid-row: 1; }
       .result {
         position: static;
         max-height: none;
@@ -620,6 +676,9 @@
       .mode button, .small-actions button { padding: 7px 6px; }
       .keypad { gap: 6px; }
       .key { min-height: 0; border-radius: 13px; }
+      .progress-panel { padding: 2px 8px; }
+      .progress-dots { grid-template-columns: repeat(10, 10px); gap: 3px; }
+      .progress-dots span { width: 10px; height: 10px; }
       .question { font-size: clamp(34px, 11.5vw, 56px); }
       .answer-box { margin-top: 5px; min-height: 42px; }
       .feedback { margin-top: 4px; min-height: 20px; }

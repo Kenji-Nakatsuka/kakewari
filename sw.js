@@ -1,11 +1,11 @@
-const CACHE_NAME = "keisan-wall-v20260602-6";
+const CACHE_NAME = "keisan-wall-v20260602-10";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260602-6",
-  "./script.js?v=20260602-6",
-  "./manifest.webmanifest?v=20260602-6",
-  "./icon.svg?v=20260602-6",
+  "./style.css?v=20260602-10",
+  "./script.js?v=20260602-10",
+  "./manifest.webmanifest?v=20260602-10",
+  "./icon.svg?v=20260602-10",
   "./icon-192.png",
   "./icon-512.png"
 ];

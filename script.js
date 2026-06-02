@@ -6,6 +6,7 @@ const timerEl = document.getElementById("timer");
 const questionEl = document.getElementById("question");
 const answerEl = document.getElementById("answer");
 const feedbackEl = document.getElementById("feedback");
+const progressDots = document.getElementById("progressDots");
 const countEl = document.getElementById("count");
 const correctEl = document.getElementById("correct");
 const streakEl = document.getElementById("streak");
@@ -21,31 +22,43 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 
 const courses = {
   elementary: {
-    label: "小学生向け",
-    shortLabel: "小学生",
+    label: "小学生 ふつう",
+    shortLabel: "小ふつう",
     detail: "かけ算・わり算",
     leftDigits: 1,
     rightDigits: 1,
   },
   hard: {
-    label: "小学生向け 難しい",
-    shortLabel: "難しい",
+    label: "小学生 難しい",
+    shortLabel: "小難しい",
     detail: "2桁と2桁のかけ算・わり算",
     leftDigits: 2,
     rightDigits: 2,
   },
   oni: {
-    label: "小学生向け 鬼",
-    shortLabel: "鬼",
+    label: "小学生 鬼",
+    shortLabel: "小鬼",
     detail: "3桁と2桁のかけ算・わり算",
     leftDigits: 3,
     rightDigits: 2,
   },
   middle: {
-    label: "中学生向け",
-    shortLabel: "中学生",
+    label: "中学生 ふつう",
+    shortLabel: "中ふつう",
     detail: "正の数・負の数の加減乗除",
-    signed: true,
+    type: "middle",
+  },
+  middleHard: {
+    label: "中学生 難しい",
+    shortLabel: "中難しい",
+    detail: "3つの正負の数の計算",
+    type: "middleHard",
+  },
+  middleOni: {
+    label: "中学生 鬼",
+    shortLabel: "中鬼",
+    detail: "累乗入りの正負の計算",
+    type: "middleOni",
   },
 };
 
@@ -154,7 +167,9 @@ function resetTimer() {
 
 function makeQuestion() {
   const course = courses[level];
-  if (course.signed) return makeMiddleQuestion();
+  if (course.type === "middle") return makeMiddleQuestion();
+  if (course.type === "middleHard") return makeMiddleHardQuestion();
+  if (course.type === "middleOni") return makeMiddleOniQuestion();
 
   const [leftMin, leftMax] = digitRange(course.leftDigits);
   const [rightMin, rightMax] = digitRange(course.rightDigits);
@@ -191,6 +206,40 @@ function makeMiddleQuestion() {
   return { text: `${divisor * answer} ÷ ${divisor}`, answer };
 }
 
+function makeMiddleHardQuestion() {
+  const a = nonZeroRand(-20, 20);
+  const b = nonZeroRand(-20, 20);
+  const c = nonZeroRand(-20, 20);
+  const patterns = [
+    { text: `${a}${formatSigned(b)} × ${formatTerm(c)}`, answer: a + (b * c) },
+    { text: `${a}-${formatTerm(b)} × ${formatTerm(c)}`, answer: a - (b * c) },
+    { text: `${formatTerm(a)} × ${formatTerm(b)}${formatSigned(c)}`, answer: (a * b) + c },
+    { text: `${formatTerm(a)} × ${formatTerm(b)}-${formatTerm(c)}`, answer: (a * b) - c },
+  ];
+  return patterns[rand(0, patterns.length - 1)];
+}
+
+function makeMiddleOniQuestion() {
+  const base = nonZeroRand(-5, 5);
+  const exponent = rand(2, 3);
+  const power = base ** exponent;
+  const b = nonZeroRand(-12, 12);
+  const c = nonZeroRand(-12, 12);
+  const powerText = `${formatTerm(base)}^${exponent}`;
+  const patterns = [
+    { text: `${powerText}${formatSigned(b)} × ${formatTerm(c)}`, answer: power + (b * c) },
+    { text: `${formatTerm(b)} × ${powerText}${formatSigned(c)}`, answer: (b * power) + c },
+    { text: `${powerText}-${formatTerm(b)} × ${formatTerm(c)}`, answer: power - (b * c) },
+  ];
+  return patterns[rand(0, patterns.length - 1)];
+}
+
+function renderProgress() {
+  progressDots.innerHTML = Array.from({ length: 10 }, (_, i) => (
+    `<span class="${i < index ? "done" : i === index ? "current" : ""}"></span>`
+  )).join("");
+}
+
 function renderQuestion() {
   locked = false;
   input = "";
@@ -203,6 +252,7 @@ function renderQuestion() {
   countEl.textContent = `${Math.min(index + 1, 10)}/10`;
   correctEl.textContent = correct;
   streakEl.textContent = streak;
+  renderProgress();
   questionEl.classList.remove("pop");
   void questionEl.offsetWidth;
   questionEl.classList.add("pop");
@@ -268,7 +318,7 @@ function startLevel(nextLevel) {
   titleScreen.hidden = true;
   rankingScreen.hidden = true;
   gameEls.forEach(el => el.hidden = false);
-  document.querySelector('[data-action="sign"]').disabled = !courses[level].signed;
+  document.querySelector('[data-action="sign"]').disabled = !courses[level].type;
   resetSet();
 }
 
@@ -320,6 +370,7 @@ function submit() {
   correctEl.textContent = correct;
   streakEl.textContent = streak;
   index++;
+  renderProgress();
   playCorrectEffect();
   if (index >= 10) stopTimer();
 
@@ -344,6 +395,7 @@ function finishSet() {
   resultTime.textContent = formatTime(finalMs);
   resultText.textContent = "10問クリア";
   renderResultRanking(bestTimes);
+  renderProgress();
 }
 
 function resetSet() {
@@ -355,6 +407,7 @@ function resetSet() {
   input = "";
   locked = true;
   resultEl.classList.remove("show");
+  renderProgress();
   renderQuestion();
   beginCountdown();
 }
@@ -370,7 +423,7 @@ document.querySelector(".keypad").addEventListener("click", (e) => {
   if (action === "clear") {
     input = input.slice(0, -1);
   } else if (action === "sign") {
-    if (courses[level].signed) input = input.startsWith("-") ? input.slice(1) : `-${input}`;
+    if (courses[level].type) input = input.startsWith("-") ? input.slice(1) : `-${input}`;
   } else if (key && input.length < 6) {
     input += key;
   }
@@ -407,7 +460,7 @@ window.addEventListener("keydown", (e) => {
     input += e.key;
     answerEl.textContent = input;
   }
-  if (e.key === "-" && !locked && courses[level].signed) {
+  if (e.key === "-" && !locked && courses[level].type) {
     input = input.startsWith("-") ? input.slice(1) : `-${input}`;
     answerEl.textContent = input || "?";
   }
