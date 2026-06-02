@@ -3,12 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>かけわりテンキー道場</title>
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>ケイサンの壁</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
-    <section class="panel main" aria-live="polite">
+    <section class="panel title-screen" id="titleScreen">
+      <div>
+        <h1>ケイサンの壁</h1>
+        <p>レベルをえらんでスタート</p>
+      </div>
+      <div class="level-options" aria-label="レベル選択">
+        <button data-level="elementary" type="button">
+          <b>小学生向け</b>
+          <span>かけ算・わり算</span>
+        </button>
+        <button data-level="middle" type="button">
+          <b>中学生向け</b>
+          <span>正の数・負の数</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel main game-ui" aria-live="polite" hidden>
       <div class="score-row">
         <div class="stat"><b id="count">1/10</b><span>いま</span></div>
         <div class="stat"><b id="correct">0</b><span>正解</span></div>
@@ -24,7 +42,7 @@
       </div>
     </section>
 
-    <aside class="panel controls">
+    <aside class="panel controls game-ui" hidden>
       <div class="mode" aria-label="出題モード">
         <button class="active" data-mode="mix" type="button">ミックス</button>
         <button data-mode="mul" type="button">かけ算</button>
@@ -41,14 +59,16 @@
         <button class="key" data-key="1" type="button">1</button>
         <button class="key" data-key="2" type="button">2</button>
         <button class="key" data-key="3" type="button">3</button>
-        <button class="key clear" data-action="clear" type="button">けす</button>
+        <button class="key sign" data-action="sign" type="button">±</button>
         <button class="key" data-key="0" type="button">0</button>
         <button class="key enter" data-action="enter" type="button">OK</button>
       </div>
 
       <div class="small-actions">
+        <button id="clearInput" type="button">けす</button>
         <button id="skip" type="button">こたえを見る</button>
         <button id="newSet" type="button">はじめから</button>
+        <button id="levelSelect" type="button">レベル選択</button>
       </div>
     </aside>
 
