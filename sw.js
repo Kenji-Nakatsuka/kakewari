@@ -1,13 +1,14 @@
-const CACHE_NAME = "keisan-wall-v20260602-10";
+const CACHE_NAME = "keisan-wall-v20260602-11";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260602-10",
-  "./script.js?v=20260602-10",
-  "./manifest.webmanifest?v=20260602-10",
-  "./icon.svg?v=20260602-10",
+  "./style.css?v=20260602-11",
+  "./script.js?v=20260602-11",
+  "./manifest.webmanifest?v=20260602-11",
+  "./icon.svg?v=20260602-11",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./assets/title-hero.png"
 ];
 
 self.addEventListener("install", (event) => {

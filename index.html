@@ -9,9 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="ケイサンの壁" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>ケイサンの壁</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260602-10" />
-  <link rel="icon" href="icon.svg?v=20260602-10" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest?v=20260602-11" />
+  <link rel="icon" href="icon.svg?v=20260602-11" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="stylesheet" href="style.css?v=20260602-11" />
 </head>
 <body>
@@ -22,6 +23,9 @@
       <div>
         <h1>ケイサンの壁</h1>
         <p>レベルをえらんでスタート</p>
+      </div>
+      <div class="title-hero" aria-hidden="true">
+        <img src="assets/title-hero.png" alt="" />
       </div>
       <div class="course-groups" aria-label="レベル選択">
         <section class="course-group">
