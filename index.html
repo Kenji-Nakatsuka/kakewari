@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <title>ケイサンの壁</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260602-2" />
 </head>
 <body>
   <main class="app">
+    <div class="countdown" id="countdown" hidden>3</div>
+
     <section class="panel title-screen" id="titleScreen">
       <div>
         <h1>ケイサンの壁</h1>
@@ -27,6 +29,8 @@
     </section>
 
     <section class="panel main game-ui" aria-live="polite" hidden>
+      <div class="timer-chip" id="timer">00:00.000</div>
+
       <div class="score-row">
         <div class="stat"><b id="count">1/10</b><span>いま</span></div>
         <div class="stat"><b id="correct">0</b><span>正解</span></div>
@@ -66,7 +70,6 @@
 
       <div class="small-actions">
         <button id="clearInput" type="button">けす</button>
-        <button id="skip" type="button">こたえを見る</button>
         <button id="newSet" type="button">はじめから</button>
         <button id="levelSelect" type="button">レベル選択</button>
       </div>
@@ -74,12 +77,14 @@
 
     <section class="panel result" id="result">
       <h2 id="resultTitle">結果</h2>
+      <div class="result-time" id="resultTime"></div>
       <p id="resultText"></p>
+      <div class="ranking" id="ranking"></div>
       <div class="review-list" id="reviewList"></div>
       <button class="restart" id="reviewBtn" type="button">まちがい復習スタート</button>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260602-2"></script>
 </body>
 </html>

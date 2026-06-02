@@ -1,6 +1,8 @@
 const appEl = document.querySelector(".app");
     const titleScreen = document.getElementById("titleScreen");
     const gameEls = document.querySelectorAll(".game-ui");
+    const countdownEl = document.getElementById("countdown");
+    const timerEl = document.getElementById("timer");
     const questionEl = document.getElementById("question");
     const answerEl = document.getElementById("answer");
     const feedbackEl = document.getElementById("feedback");
@@ -9,7 +11,9 @@ const appEl = document.querySelector(".app");
     const streakEl = document.getElementById("streak");
     const resultEl = document.getElementById("result");
     const resultTitle = document.getElementById("resultTitle");
+    const resultTime = document.getElementById("resultTime");
     const resultText = document.getElementById("resultText");
+    const rankingEl = document.getElementById("ranking");
     const reviewList = document.getElementById("reviewList");
     const reviewBtn = document.getElementById("reviewBtn");
     const signBtn = document.querySelector('[data-action="sign"]');
@@ -39,6 +43,10 @@ const appEl = document.querySelector(".app");
     let lastMistakes = [];
     let reviewQueue = [];
     let locked = false;
+    let countdownToken = 0;
+    let timerStart = 0;
+    let elapsedMs = 0;
+    let timerFrame = null;
 
     const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const nonZeroRand = (min, max) => {
@@ -57,6 +65,68 @@ const appEl = document.querySelector(".app");
     };
     const formatTerm = (value) => value < 0 ? `(${value})` : `${value}`;
     const formatSigned = (value) => value < 0 ? `${value}` : `+${value}`;
+    const pad = (value, size = 2) => String(value).padStart(size, "0");
+    const rankingKey = () => `keisanWallTimes_${level}_${mode}`;
+
+    function formatTime(ms) {
+      const total = Math.max(0, Math.floor(ms));
+      const minutes = Math.floor(total / 60000);
+      const seconds = Math.floor((total % 60000) / 1000);
+      const millis = total % 1000;
+      return `${pad(minutes)}:${pad(seconds)}.${pad(millis, 3)}`;
+    }
+
+    function readTimes() {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${rankingKey()}=([^;]*)`));
+      if (!match) return [];
+      try {
+        const times = JSON.parse(decodeURIComponent(match[1]));
+        return Array.isArray(times) ? times.filter(Number.isFinite) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveTime(ms) {
+      const times = [...readTimes(), Math.floor(ms)].sort((a, b) => a - b).slice(0, 10);
+      document.cookie = `${rankingKey()}=${encodeURIComponent(JSON.stringify(times))}; max-age=31536000; path=/; SameSite=Lax`;
+      return times;
+    }
+
+    function renderRanking(times = readTimes()) {
+      if (!times.length) {
+        rankingEl.innerHTML = `<h3>ベストタイム</h3><p>まだ記録がありません</p>`;
+        return;
+      }
+
+      rankingEl.innerHTML = `<h3>ベストタイム</h3><ol>${times.map((time, i) => `<li><span>${i + 1}</span><b>${formatTime(time)}</b></li>`).join("")}</ol>`;
+    }
+
+    function stopTimer() {
+      if (timerFrame) cancelAnimationFrame(timerFrame);
+      timerFrame = null;
+    }
+
+    function updateTimer() {
+      elapsedMs = performance.now() - timerStart;
+      timerEl.textContent = formatTime(elapsedMs);
+      timerFrame = requestAnimationFrame(updateTimer);
+    }
+
+    function startTimer() {
+      stopTimer();
+      timerStart = performance.now();
+      elapsedMs = 0;
+      timerEl.textContent = formatTime(0);
+      timerFrame = requestAnimationFrame(updateTimer);
+    }
+
+    function resetTimer() {
+      stopTimer();
+      elapsedMs = 0;
+      timerEl.textContent = formatTime(0);
+      resultTime.textContent = "";
+    }
 
     function makeElementaryQuestion() {
       const type = mode === "mix" ? (Math.random() < .5 ? "mul" : "div") : mode;
@@ -121,7 +191,36 @@ const appEl = document.querySelector(".app");
       questionEl.classList.add("pop");
     }
 
+    function beginCountdown() {
+      const token = ++countdownToken;
+      locked = true;
+      resetTimer();
+      countdownEl.hidden = false;
+      countdownEl.textContent = "3";
+      feedbackEl.textContent = "スタートまで 3";
+      feedbackEl.className = "feedback";
+
+      [2, 1, "GO"].forEach((value, i) => {
+        setTimeout(() => {
+          if (token !== countdownToken) return;
+          countdownEl.textContent = value;
+          feedbackEl.textContent = value === "GO" ? "スタート！" : `スタートまで ${value}`;
+        }, (i + 1) * 650);
+      });
+
+      setTimeout(() => {
+        if (token !== countdownToken) return;
+        countdownEl.hidden = true;
+        locked = false;
+        feedbackEl.textContent = "テンキーで答えてね";
+        startTimer();
+      }, 2200);
+    }
+
     function showTitle() {
+      countdownToken++;
+      countdownEl.hidden = true;
+      resetTimer();
       current = null;
       locked = true;
       input = "";
@@ -164,13 +263,13 @@ const appEl = document.querySelector(".app");
       setTimeout(() => burst.remove(), 420);
     }
 
-    function submit(forceWrong = false) {
+    function submit() {
       if (locked || !current) return;
       const value = Number(input);
-      if (!forceWrong && (input === "" || input === "-")) return;
+      if (input === "" || input === "-") return;
 
       locked = true;
-      const ok = !forceWrong && value === current.answer;
+      const ok = value === current.answer;
       answerEl.textContent = current.answer;
 
       if (ok) {
@@ -183,12 +282,13 @@ const appEl = document.querySelector(".app");
         streak = 0;
         feedbackEl.textContent = `答えは ${current.answer}`;
         feedbackEl.className = "feedback bad";
-        mistakes.push({ ...current, your: forceWrong ? "見た" : input });
+        mistakes.push({ ...current, your: input });
       }
 
       correctEl.textContent = correct;
       streakEl.textContent = streak;
       index++;
+      if (index >= 10) stopTimer();
 
       setTimeout(() => {
         if (index >= 10) finishSet();
@@ -197,7 +297,10 @@ const appEl = document.querySelector(".app");
     }
 
     function finishSet() {
+      stopTimer();
+      const finalMs = elapsedMs;
       lastMistakes = mistakes.slice();
+      const bestTimes = lastMistakes.length ? readTimes() : saveTime(finalMs);
       current = null;
       questionEl.textContent = "おしまい！";
       answerEl.textContent = `${correct}/10`;
@@ -206,7 +309,9 @@ const appEl = document.querySelector(".app");
 
       resultEl.classList.add("show");
       resultTitle.textContent = "セット結果";
-      resultText.textContent = `10問中 ${correct}問 正解`;
+      resultTime.textContent = formatTime(finalMs);
+      resultText.textContent = lastMistakes.length ? `10問中 ${correct}問 正解（全問正解で記録）` : `10問中 ${correct}問 正解`;
+      renderRanking(bestTimes);
       reviewList.innerHTML = "";
 
       if (!lastMistakes.length) {
@@ -224,15 +329,18 @@ const appEl = document.querySelector(".app");
     }
 
     function resetSet(asReview = false) {
+      countdownToken++;
+      countdownEl.hidden = true;
       index = 0;
       correct = 0;
       streak = 0;
       input = "";
-      locked = false;
+      locked = true;
       reviewQueue = asReview ? lastMistakes.map(m => ({ text: m.text, answer: m.answer })) : [];
       mistakes = [];
       resultEl.classList.remove("show");
       renderQuestion();
+      beginCountdown();
     }
 
     document.querySelector(".keypad").addEventListener("click", (e) => {
@@ -260,7 +368,6 @@ const appEl = document.querySelector(".app");
       });
     });
 
-    document.getElementById("skip").addEventListener("click", () => submit(true));
     document.getElementById("clearInput").addEventListener("click", () => {
       if (locked) return;
       input = input.slice(0, -1);
