@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <title>ケイサンの壁</title>
-  <link rel="stylesheet" href="style.css?v=20260602-2" />
+  <link rel="stylesheet" href="style.css?v=20260602-5" />
 </head>
 <body>
   <main class="app">
@@ -21,11 +21,30 @@
           <b>小学生向け</b>
           <span>かけ算・わり算</span>
         </button>
+        <button data-level="hard" type="button">
+          <b>小学生向け 難しい</b>
+          <span>2桁と2桁のかけ算・わり算</span>
+        </button>
+        <button data-level="oni" type="button">
+          <b>小学生向け 鬼</b>
+          <span>3桁と2桁のかけ算・わり算</span>
+        </button>
         <button data-level="middle" type="button">
           <b>中学生向け</b>
-          <span>正の数・負の数</span>
+          <span>正の数・負の数の加減乗除</span>
         </button>
       </div>
+      <button class="ranking-toggle" id="showRankings" type="button">ランキングを見る</button>
+    </section>
+
+    <section class="panel ranking-screen" id="rankingScreen" hidden>
+      <div>
+        <h2>ランキング</h2>
+        <p>コース別ベスト10</p>
+      </div>
+      <div class="ranking-tabs" id="rankingTabs" aria-label="ランキングのコース選択"></div>
+      <div class="ranking" id="titleRankingList"></div>
+      <button class="home-btn" id="rankingHome" type="button">ホームに戻る</button>
     </section>
 
     <section class="panel main game-ui" aria-live="polite" hidden>
@@ -47,12 +66,6 @@
     </section>
 
     <aside class="panel controls game-ui" hidden>
-      <div class="mode" aria-label="出題モード">
-        <button class="active" data-mode="mix" type="button">ミックス</button>
-        <button data-mode="mul" type="button">かけ算</button>
-        <button data-mode="div" type="button">わり算</button>
-      </div>
-
       <div class="keypad" aria-label="テンキー">
         <button class="key" data-key="7" type="button">7</button>
         <button class="key" data-key="8" type="button">8</button>
@@ -80,11 +93,13 @@
       <div class="result-time" id="resultTime"></div>
       <p id="resultText"></p>
       <div class="ranking" id="ranking"></div>
-      <div class="review-list" id="reviewList"></div>
-      <button class="restart" id="reviewBtn" type="button">まちがい復習スタート</button>
+      <div class="result-actions">
+        <button class="restart" id="retryBtn" type="button">もう1回</button>
+        <button class="home-btn" id="homeBtn" type="button">ホームに戻る</button>
+      </div>
     </section>
   </main>
 
-  <script src="script.js?v=20260602-2"></script>
+  <script src="script.js?v=20260602-5"></script>
 </body>
 </html>
