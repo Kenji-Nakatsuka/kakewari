@@ -3,12 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>かけわりテンキー道場</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#ffd166" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ケイサンの壁" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>ケイサンの壁</title>
+  <link rel="manifest" href="manifest.webmanifest?v=20260602-11" />
+  <link rel="icon" href="icon.svg?v=20260602-11" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="preload" href="assets/title-hero.png" as="image" />
+  <link rel="stylesheet" href="style.css?v=20260602-11" />
 </head>
 <body>
+  <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
+
   <main class="app">
-    <section class="panel main" aria-live="polite">
+    <div class="countdown" id="countdown" hidden>3</div>
+
+    <section class="panel title-screen" id="titleScreen">
+      <div>
+        <h1>ケイサンの壁</h1>
+        <p>レベルをえらんでスタート</p>
+      </div>
+      <div class="title-hero" aria-hidden="true">
+        <img src="assets/title-hero.png" alt="" />
+      </div>
+      <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
+      <div class="course-groups" aria-label="レベル選択">
+        <section class="course-group">
+          <h2>小学生</h2>
+          <div class="level-options">
+            <button data-level="elementary" type="button">
+              <b>ふつう</b>
+              <span>かけ算・わり算</span>
+                          <span class="medals" data-medals="elementary" aria-hidden="true"></span>
+            </button>
+            <button data-level="hard" type="button">
+              <b>難しい</b>
+              <span>2桁と2桁</span>
+                          <span class="medals" data-medals="hard" aria-hidden="true"></span>
+            </button>
+            <button data-level="oni" type="button">
+              <b>鬼</b>
+              <span>3桁と2桁</span>
+                          <span class="medals" data-medals="oni" aria-hidden="true"></span>
+            </button>
+          </div>
+        </section>
+        <section class="course-group">
+          <h2>中学生</h2>
+          <div class="level-options">
+            <button data-level="middle" type="button">
+              <b>ふつう</b>
+              <span>正負の加減乗除</span>
+                          <span class="medals" data-medals="middle" aria-hidden="true"></span>
+            </button>
+            <button data-level="middleHard" type="button">
+              <b>難しい</b>
+              <span>3つの数の計算</span>
+                          <span class="medals" data-medals="middleHard" aria-hidden="true"></span>
+            </button>
+            <button data-level="middleOni" type="button">
+              <b>鬼</b>
+              <span>累乗入り</span>
+                          <span class="medals" data-medals="middleOni" aria-hidden="true"></span>
+            </button>
+          </div>
+        </section>
+      </div>
+      <button class="ranking-toggle" id="showRankings" type="button">ランキングを見る</button>
+    </section>
+
+    <section class="panel ranking-screen" id="rankingScreen" hidden>
+      <div>
+        <h2>ランキング</h2>
+        <p>コース別ベスト10</p>
+      </div>
+      <div class="ranking-tabs" id="rankingTabs" aria-label="ランキングのコース選択"></div>
+      <div class="ranking" id="titleRankingList"></div>
+      <button class="home-btn" id="rankingHome" type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel main game-ui" aria-live="polite" hidden>
+      <div class="timer-chip" id="timer">00:00.000</div>
+
       <div class="score-row">
         <div class="stat"><b id="count">1/10</b><span>いま</span></div>
         <div class="stat"><b id="correct">0</b><span>正解</span></div>
@@ -24,13 +103,11 @@
       </div>
     </section>
 
-    <aside class="panel controls">
-      <div class="mode" aria-label="出題モード">
-        <button class="active" data-mode="mix" type="button">ミックス</button>
-        <button data-mode="mul" type="button">かけ算</button>
-        <button data-mode="div" type="button">わり算</button>
-      </div>
+    <section class="panel progress-panel game-ui" hidden>
+      <div class="progress-dots" id="progressDots" aria-label="進み具合"></div>
+    </section>
 
+    <aside class="panel controls game-ui" hidden>
       <div class="keypad" aria-label="テンキー">
         <button class="key" data-key="7" type="button">7</button>
         <button class="key" data-key="8" type="button">8</button>
@@ -41,25 +118,31 @@
         <button class="key" data-key="1" type="button">1</button>
         <button class="key" data-key="2" type="button">2</button>
         <button class="key" data-key="3" type="button">3</button>
-        <button class="key clear" data-action="clear" type="button">けす</button>
+        <button class="key sign" data-action="sign" type="button">±</button>
         <button class="key" data-key="0" type="button">0</button>
         <button class="key enter" data-action="enter" type="button">OK</button>
       </div>
 
       <div class="small-actions">
-        <button id="skip" type="button">こたえを見る</button>
+        <button id="clearInput" type="button">けす</button>
         <button id="newSet" type="button">はじめから</button>
+        <button id="levelSelect" type="button">レベル選択</button>
       </div>
     </aside>
 
     <section class="panel result" id="result">
       <h2 id="resultTitle">結果</h2>
+      <div class="result-time" id="resultTime"></div>
+      <div class="result-badges" id="resultBadges"></div>
       <p id="resultText"></p>
-      <div class="review-list" id="reviewList"></div>
-      <button class="restart" id="reviewBtn" type="button">まちがい復習スタート</button>
+      <div class="ranking" id="ranking"></div>
+      <div class="result-actions">
+        <button class="restart" id="retryBtn" type="button">もう1回</button>
+        <button class="home-btn" id="homeBtn" type="button">ホームに戻る</button>
+      </div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260602-11"></script>
 </body>
 </html>
