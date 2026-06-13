@@ -724,6 +724,18 @@ document.querySelectorAll("[data-level]").forEach(btn => {
   btn.addEventListener("click", () => startLevel(btn.dataset.level));
 });
 
+document.querySelectorAll(".character-button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.classList.remove("is-reacting");
+    void btn.offsetWidth;
+    btn.classList.add("is-reacting");
+    playKeyTap();
+  });
+  btn.addEventListener("animationend", (e) => {
+    if (e.animationName === "character-react") btn.classList.remove("is-reacting");
+  });
+});
+
 window.addEventListener("keydown", (e) => {
   if (/^[0-9]$/.test(e.key) && !locked && input.length < 6) {
     input += e.key;

@@ -119,22 +119,66 @@
       font-weight: 900;
     }
 
-    .title-hero {
+    .character-stage {
+      position: relative;
       width: 100%;
-      aspect-ratio: 16 / 7;
-      max-height: 210px;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 8px 18px rgba(36,48,71,.13);
-      background: #dff7ff;
+      min-height: clamp(118px, 28vw, 180px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      overflow: visible;
     }
 
-    .title-hero img {
+    .character-stage::before {
+      content: "";
+      position: absolute;
+      inset: 58% 8% 6%;
+      border-radius: 999px;
+      background: radial-gradient(ellipse, rgba(255, 209, 102, .32), transparent 70%);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    .character-button {
+      position: relative;
+      z-index: 1;
+      width: min(45vw, 176px);
+      aspect-ratio: 1;
+      border: 0;
+      padding: 0;
+      justify-self: center;
+      background: transparent;
+      cursor: pointer;
+      filter: drop-shadow(0 14px 14px rgba(36, 48, 71, .16));
+      -webkit-tap-highlight-color: transparent;
+      animation: character-float 3.2s cubic-bezier(.45, 0, .2, 1) infinite;
+      transform-origin: 50% 58%;
+    }
+
+    .character-right {
+      width: min(40vw, 156px);
+      animation-delay: -1.45s;
+    }
+
+    .character-button img {
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .character-button:focus-visible {
+      outline: 4px solid rgba(128, 103, 255, .38);
+      outline-offset: 4px;
+      border-radius: 999px;
+    }
+
+    .character-button.is-reacting {
+      animation:
+        character-float 3.2s cubic-bezier(.45, 0, .2, 1) infinite,
+        character-react .78s cubic-bezier(.18, .9, .22, 1.18);
     }
 
     .course-groups {
@@ -207,11 +251,51 @@
     }
 
     .ranking-screen {
-      padding: clamp(18px, 6vw, 28px);
+      padding: 0;
       display: grid;
-      align-content: center;
-      gap: 12px;
+      align-content: start;
+      gap: 0;
       overflow: auto;
+    }
+
+    .ranking-hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 8.4;
+      min-height: 178px;
+      overflow: hidden;
+      border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+      background: #dff7ff;
+    }
+
+    .ranking-hero img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .ranking-hero::after {
+      content: "";
+      position: absolute;
+      inset: 38% 0 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, .82) 58%,
+        rgba(255, 255, 255, .94)
+      );
+      pointer-events: none;
+    }
+
+    .ranking-content {
+      display: grid;
+      gap: 12px;
+      padding: 0 clamp(18px, 6vw, 28px) clamp(18px, 6vw, 28px);
+      margin-top: -42px;
+      position: relative;
+      z-index: 1;
     }
 
     .ranking-screen h2 {
@@ -613,6 +697,18 @@
       75% { transform: translateX(6px); }
     }
 
+    @keyframes character-float {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-12px) rotate(1.5deg); }
+    }
+
+    @keyframes character-react {
+      0% { scale: 1; rotate: 0deg; }
+      28% { scale: 1.18; rotate: -8deg; }
+      72% { scale: .96; rotate: 360deg; }
+      100% { scale: 1; rotate: 360deg; }
+    }
+
     @keyframes countdown-pop {
       0% { opacity: 0; transform: scale(.7); }
       40% { opacity: 1; transform: scale(1.08); }
@@ -653,6 +749,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .character-button,
       .countdown,
       .result-time { animation-duration: .01ms; }
       .answer-box.correct-mark::after { animation-duration: .18s; }
