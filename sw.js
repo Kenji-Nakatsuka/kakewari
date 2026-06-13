@@ -1,11 +1,11 @@
-const CACHE_NAME = "keisan-wall-v20260602-11";
+const CACHE_NAME = "keisan-wall-v20260613-01";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260602-11",
-  "./script.js?v=20260602-11",
-  "./manifest.webmanifest?v=20260602-11",
-  "./icon.svg?v=20260602-11",
+  "./style.css?v=20260613-01",
+  "./script.js?v=20260613-01",
+  "./manifest.webmanifest?v=20260613-01",
+  "./icon.svg?v=20260613-01",
   "./icon-192.png",
   "./icon-512.png",
   "./assets/title-hero.png"
@@ -29,6 +29,20 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  const acceptsHtml = event.request.headers.get("accept")?.includes("text/html");
+  if (event.request.mode === "navigate" || acceptsHtml) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          return response;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request)
