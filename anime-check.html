@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chara02 animation check</title>
+  <style>
+    :root {
+      --ink: #243047;
+      --muted: #68728a;
+      --paper: #fffaf0;
+      --sun: #ffd166;
+      --grape: #8067ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100svh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 209, 102, .42), transparent 25%),
+        radial-gradient(circle at 84% 14%, rgba(121, 199, 255, .36), transparent 26%),
+        linear-gradient(135deg, #fff6d8 0%, #f7fbff 54%, #f2ecff 100%);
+    }
+
+    main {
+      width: min(720px, 100%);
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 7vw, 40px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .preview {
+      width: min(100%, 520px);
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      border: 2px solid rgba(36, 48, 71, .08);
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 18px 38px rgba(36, 48, 71, .16);
+      overflow: hidden;
+    }
+
+    canvas {
+      width: min(62vw, 250px);
+      aspect-ratio: 1;
+      filter: drop-shadow(0 16px 16px rgba(36, 48, 71, .16));
+    }
+
+    .float canvas {
+      animation: fugu-float 3.1s cubic-bezier(.45, 0, .2, 1) infinite;
+      transform-origin: 50% 58%;
+    }
+
+    .controls {
+      width: min(100%, 520px);
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .86);
+      border: 2px solid rgba(36, 48, 71, .08);
+    }
+
+    label {
+      display: grid;
+      grid-template-columns: 96px 1fr 58px;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+      font-weight: 900;
+    }
+
+    .check-label {
+      grid-template-columns: auto 1fr;
+      justify-content: start;
+    }
+
+    output {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--grape);
+    }
+
+    input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--grape);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      color: var(--ink);
+      background: #eef3ff;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: inset 0 -3px 0 rgba(36, 48, 71, .1);
+    }
+
+    button.primary { background: var(--sun); }
+
+    .paused canvas { opacity: .82; }
+
+    .note {
+      width: min(100%, 520px);
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 250, 240, .78);
+      border: 2px solid rgba(232, 220, 199, .82);
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @keyframes fugu-float {
+      0%, 100% { transform: translateY(0) rotate(1deg); }
+      50% { transform: translateY(-12px) rotate(-1.5deg); }
+    }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <div>
+      <h1>chara02 animation check</h1>
+      <p>Canvasで8コマを切り出し、隣コマのはみ出しを除外して再生</p>
+    </div>
+
+    <section class="preview" aria-label="アニメーションプレビュー">
+      <canvas id="canvas" width="512" height="512"></canvas>
+    </section>
+
+    <section class="controls" aria-label="調整">
+      <label>
+        speed
+        <input id="speed" type="range" min="0.04" max="0.22" step="0.01" value="0.09" />
+        <output id="speedOut">0.09s</output>
+      </label>
+      <label>
+        size
+        <input id="size" type="range" min="150" max="340" step="10" value="250" />
+        <output id="sizeOut">250px</output>
+      </label>
+      <label>
+        zoom
+        <input id="zoom" type="range" min="0.72" max="1.18" step="0.02" value="0.94" />
+        <output id="zoomOut">0.94</output>
+      </label>
+      <label class="check-label">
+        <input id="float" type="checkbox" />
+        上下フロートを重ねる
+      </label>
+      <div class="buttons">
+        <button class="primary" id="pause" type="button">pause</button>
+        <button id="reset" type="button">reset</button>
+      </div>
+    </section>
+
+    <p class="note">
+      CSS背景のスプライト再生ではなく、1コマ384x512で切り出してから一番大きい透明でない連結成分だけを512x512キャンバス中央に描画しています。隣コマのはみ出しや区切り線を拾わないか確認できます。
+    </p>
+  </main>
+
+  <script>
+    const app = document.getElementById("app");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const speed = document.getElementById("speed");
+    const size = document.getElementById("size");
+    const zoom = document.getElementById("zoom");
+    const float = document.getElementById("float");
+    const speedOut = document.getElementById("speedOut");
+    const sizeOut = document.getElementById("sizeOut");
+    const zoomOut = document.getElementById("zoomOut");
+    const pause = document.getElementById("pause");
+    const reset = document.getElementById("reset");
+
+    const image = new Image();
+    const frames = [];
+    let frameIndex = 0;
+    let paused = false;
+    let lastTime = 0;
+    let accumulator = 0;
+
+    function mainComponentFor(imageData, width, height) {
+      const data = imageData.data;
+      const visited = new Uint8Array(width * height);
+      let best = null;
+
+      const isSolid = (x, y) => data[(y * width + x) * 4 + 3] > 24;
+      const stack = [];
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const start = y * width + x;
+          if (visited[start] || !isSolid(x, y)) continue;
+
+          let minX = x;
+          let minY = y;
+          let maxX = x;
+          let maxY = y;
+          let count = 0;
+
+          visited[start] = 1;
+          stack.push(start);
+
+          while (stack.length) {
+            const current = stack.pop();
+            const cx = current % width;
+            const cy = Math.floor(current / width);
+            count++;
+            minX = Math.min(minX, cx);
+            minY = Math.min(minY, cy);
+            maxX = Math.max(maxX, cx);
+            maxY = Math.max(maxY, cy);
+
+            const neighbors = [
+              current - 1,
+              current + 1,
+              current - width,
+              current + width,
+            ];
+
+            for (const next of neighbors) {
+              if (next < 0 || next >= visited.length || visited[next]) continue;
+              const nx = next % width;
+              const ny = Math.floor(next / width);
+              if (Math.abs(nx - cx) + Math.abs(ny - cy) !== 1) continue;
+              if (!isSolid(nx, ny)) continue;
+              visited[next] = 1;
+              stack.push(next);
+            }
+          }
+
+          const component = {
+            x: Math.max(0, minX - 2),
+            y: Math.max(0, minY - 2),
+            width: Math.min(width, maxX + 3) - Math.max(0, minX - 2),
+            height: Math.min(height, maxY + 3) - Math.max(0, minY - 2),
+            count,
+          };
+          if (!best || component.count > best.count) best = component;
+        }
+      }
+
+      return best || { x: 0, y: 0, width, height, count: width * height };
+    }
+
+    function buildFrames() {
+      const columns = 4;
+      const rows = 2;
+      const frameWidth = image.width / columns;
+      const frameHeight = image.height / rows;
+      const scratch = document.createElement("canvas");
+      const scratchCtx = scratch.getContext("2d", { willReadFrequently: true });
+      scratch.width = frameWidth;
+      scratch.height = frameHeight;
+
+      frames.length = 0;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < columns; col++) {
+          scratchCtx.clearRect(0, 0, frameWidth, frameHeight);
+          scratchCtx.drawImage(
+            image,
+            col * frameWidth,
+            row * frameHeight,
+            frameWidth,
+            frameHeight,
+            0,
+            0,
+            frameWidth,
+            frameHeight
+          );
+          const imageData = scratchCtx.getImageData(0, 0, frameWidth, frameHeight);
+          const bounds = mainComponentFor(imageData, frameWidth, frameHeight);
+          frames.push({ col, row, frameWidth, frameHeight, bounds });
+        }
+      }
+    }
+
+    function drawFrame() {
+      if (!frames.length) return;
+      const frame = frames[frameIndex];
+      const target = canvas.width * Number(zoom.value);
+      const scale = Math.min(target / frame.bounds.width, target / frame.bounds.height);
+      const drawWidth = frame.bounds.width * scale;
+      const drawHeight = frame.bounds.height * scale;
+      const drawX = (canvas.width - drawWidth) / 2;
+      const drawY = (canvas.height - drawHeight) / 2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        image,
+        frame.col * frame.frameWidth + frame.bounds.x,
+        frame.row * frame.frameHeight + frame.bounds.y,
+        frame.bounds.width,
+        frame.bounds.height,
+        drawX,
+        drawY,
+        drawWidth,
+        drawHeight
+      );
+    }
+
+    function tick(time) {
+      if (!lastTime) lastTime = time;
+      const delta = time - lastTime;
+      lastTime = time;
+
+      if (!paused) {
+        accumulator += delta;
+        const interval = Number(speed.value) * 1000;
+        while (accumulator >= interval) {
+          accumulator -= interval;
+          frameIndex = (frameIndex + 1) % frames.length;
+        }
+        drawFrame();
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    function apply() {
+      canvas.style.width = `${size.value}px`;
+      app.classList.toggle("float", float.checked);
+      speedOut.textContent = `${Number(speed.value).toFixed(2)}s`;
+      sizeOut.textContent = `${size.value}px`;
+      zoomOut.textContent = Number(zoom.value).toFixed(2);
+      drawFrame();
+    }
+
+    speed.addEventListener("input", apply);
+    size.addEventListener("input", apply);
+    zoom.addEventListener("input", apply);
+    float.addEventListener("change", apply);
+    pause.addEventListener("click", () => {
+      paused = !paused;
+      app.classList.toggle("paused", paused);
+      pause.textContent = paused ? "play" : "pause";
+    });
+    reset.addEventListener("click", () => {
+      speed.value = "0.09";
+      size.value = "250";
+      zoom.value = "0.94";
+      float.checked = false;
+      paused = false;
+      frameIndex = 0;
+      accumulator = 0;
+      app.classList.remove("paused");
+      pause.textContent = "pause";
+      apply();
+    });
+
+    image.onload = () => {
+      buildFrames();
+      apply();
+      requestAnimationFrame(tick);
+    };
+    image.src = "assets/chara02_fugu_anime.png";
+  </script>
+</body>
+</html>
