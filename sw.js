@@ -1,16 +1,17 @@
-const CACHE_NAME = "keisan-wall-v20260613-02";
+const CACHE_NAME = "keisan-wall-v20260617-karuta-02";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260613-02",
-  "./script.js?v=20260613-02",
+  "./style.css?v=20260616-karuta-01",
+  "./script.js?v=20260616-karuta-01",
   "./manifest.webmanifest?v=20260613-02",
   "./icon.svg?v=20260613-02",
   "./icon-192.png",
   "./icon-512.png",
   "./assets/title-hero.png",
   "./assets/chara01_kurage.png",
-  "./assets/chara02_fugu.png"
+  "./assets/chara02_fugu.png",
+  "./assets/hyakunin_full_lines_with_poets.json"
 ];
 
 self.addEventListener("install", (event) => {
