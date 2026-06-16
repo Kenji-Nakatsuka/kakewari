@@ -48,6 +48,11 @@
       place-items: stretch;
     }
 
+    .app.karuta-play-mode {
+      height: calc(100svh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)));
+      grid-template-rows: 1fr;
+    }
+
     .panel {
       background: rgba(255,255,255,.9);
       border: 2px solid rgba(36, 48, 71, .08);
@@ -1376,6 +1381,13 @@
     }
 
     @media (min-width: 760px) {
+      .app.karuta-play-mode {
+        height: calc(100svh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)));
+        min-height: 0;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+
       .karuta-mode {
         --karuta-choice-w: 142px;
         --karuta-kami-w: 190px;

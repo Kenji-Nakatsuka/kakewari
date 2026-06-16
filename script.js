@@ -612,6 +612,7 @@ function showTitle() {
   locked = true;
   input = "";
   resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   appEl.classList.add("title-mode");
   titleScreen.hidden = false;
@@ -633,6 +634,7 @@ function showRankingScreen() {
   currentCard = null;
   locked = true;
   resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   appEl.classList.add("title-mode");
   titleScreen.hidden = true;
@@ -648,6 +650,7 @@ function startLevel(nextLevel) {
   activeMode = "calc";
   level = nextLevel;
   ensureAudio();
+  appEl.classList.remove("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   appEl.classList.remove("title-mode");
   titleScreen.hidden = true;
@@ -849,6 +852,7 @@ function showKarutaSelect() {
   countdownEl.hidden = true;
   resetTimer();
   resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   appEl.classList.add("title-mode");
   titleScreen.hidden = true;
@@ -868,6 +872,7 @@ function startKaruta(count) {
   activeMode = "karuta";
   soundEnabled = soundOn;
   ensureAudio();
+  appEl.classList.add("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   karutaQuestionCount = count;
   loadHyakuninCards()
@@ -906,6 +911,7 @@ function resetKarutaSet() {
   karutaRemovedIds = new Set();
   karutaHintShown = false;
   resultEl.classList.remove("show");
+  appEl.classList.add("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   karutaMode.hidden = false;
   karutaFullPoemEl.hidden = true;
@@ -1114,6 +1120,7 @@ function finishKarutaSet() {
   karutaChoicesEl.innerHTML = "";
 
   karutaMode.hidden = true;
+  appEl.classList.remove("karuta-play-mode");
   appEl.classList.add("karuta-result-mode");
   resultEl.classList.add("show");
   resultTitle.textContent = `百人一首 ${karutaQuestionCount}枚モード`;
