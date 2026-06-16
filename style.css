@@ -1041,20 +1041,20 @@
     }
 
     .karuta-mode {
-      --karuta-choice-w: clamp(116px, 36vw, 142px);
-      --karuta-kami-w: clamp(138px, 40vw, 178px);
-      --karuta-shimo-w: clamp(126px, 36vw, 158px);
-      --karuta-choice-h: clamp(150px, 46vw, 178px);
-      --karuta-kami-h: clamp(184px, 53vw, 228px);
-      --karuta-kami-area-h: calc(var(--karuta-kami-h) + 16px);
-      --karuta-shimo-h: clamp(170px, 49vw, 204px);
-      --karuta-choice-gap: 32px;
-      --karuta-action-h: 46px;
+      --karuta-choice-w: clamp(108px, 34vw, 132px);
+      --karuta-kami-w: clamp(126px, 37vw, 160px);
+      --karuta-shimo-w: clamp(116px, 34vw, 146px);
+      --karuta-choice-h: clamp(136px, 41vw, 164px);
+      --karuta-kami-h: clamp(162px, 46vw, 202px);
+      --karuta-kami-area-h: calc(var(--karuta-kami-h) + 12px);
+      --karuta-shimo-h: clamp(150px, 43vw, 184px);
+      --karuta-choice-gap: 24px;
+      --karuta-action-h: 42px;
       position: relative;
       height: 100%;
       max-height: none;
       min-height: 0;
-      padding: 10px;
+      padding: 8px;
       display: grid;
       grid-template-areas:
         "nav"
@@ -1062,7 +1062,7 @@
         "shimo"
         "actions";
       grid-template-rows: auto var(--karuta-kami-area-h) minmax(0, 1fr) var(--karuta-action-h);
-      gap: 8px;
+      gap: 6px;
       overflow: hidden;
     }
 
@@ -1227,14 +1227,14 @@
     }
 
     .karuta-kami-lines {
-      font-size: clamp(17px, 4.7vw, 24px);
+      font-size: clamp(15px, 4.1vw, 21px);
       font-weight: 900;
     }
 
     .karuta-choice .karuta-card-lines,
     .karuta-shimo-card .karuta-card-lines {
       gap: 5px;
-      font-size: clamp(16px, 4.6vw, 23px);
+      font-size: clamp(14px, 4.1vw, 20px);
       line-height: 1.06;
     }
 
@@ -1389,14 +1389,14 @@
       }
 
       .karuta-mode {
-        --karuta-choice-w: 142px;
-        --karuta-kami-w: 190px;
-        --karuta-shimo-w: 166px;
-        --karuta-choice-h: 186px;
-        --karuta-kami-h: 250px;
-        --karuta-kami-area-h: 268px;
-        --karuta-shimo-h: 224px;
-        --karuta-choice-gap: 36px;
+        --karuta-choice-w: 132px;
+        --karuta-kami-w: 166px;
+        --karuta-shimo-w: 148px;
+        --karuta-choice-h: 172px;
+        --karuta-kami-h: 218px;
+        --karuta-kami-area-h: 232px;
+        --karuta-shimo-h: 198px;
+        --karuta-choice-gap: 28px;
         --karuta-choice-area-h: 430px;
         --karuta-action-h: 46px;
         grid-column: 1 / -1;
@@ -1420,29 +1420,29 @@
       }
 
       .karuta-card-lines {
-        font-size: 22px;
+        font-size: 20px;
       }
 
       .karuta-choice .karuta-card-lines,
       .karuta-shimo-card .karuta-card-lines {
-        font-size: 23px;
+        font-size: 20px;
       }
     }
 
     @media (max-width: 420px) {
       .karuta-mode {
-        --karuta-choice-w: clamp(108px, 34vw, 126px);
-        --karuta-kami-w: clamp(130px, 39vw, 148px);
-        --karuta-shimo-w: clamp(118px, 35vw, 132px);
-        --karuta-choice-h: clamp(140px, 43vw, 166px);
-        --karuta-kami-h: clamp(170px, 50vw, 196px);
-        --karuta-kami-area-h: calc(var(--karuta-kami-h) + 14px);
-        --karuta-shimo-h: clamp(158px, 47vw, 184px);
-        --karuta-choice-gap: 30px;
+        --karuta-choice-w: clamp(100px, 31vw, 116px);
+        --karuta-kami-w: clamp(116px, 35vw, 134px);
+        --karuta-shimo-w: clamp(106px, 32vw, 122px);
+        --karuta-choice-h: clamp(126px, 39vw, 150px);
+        --karuta-kami-h: clamp(148px, 45vw, 174px);
+        --karuta-kami-area-h: calc(var(--karuta-kami-h) + 10px);
+        --karuta-shimo-h: clamp(138px, 42vw, 160px);
+        --karuta-choice-gap: 22px;
         --karuta-choice-area-h: calc((var(--karuta-choice-h) * 2) + var(--karuta-choice-gap) + 20px);
-        --karuta-action-h: 44px;
-        padding: 8px;
-        gap: 6px;
+        --karuta-action-h: 42px;
+        padding: 7px;
+        gap: 5px;
       }
 
       .karuta-reader {
