@@ -833,6 +833,92 @@
       .question { font-size: clamp(34px, 11.5vw, 56px); }
       .answer-box { margin-top: 5px; min-height: 42px; }
       .feedback { margin-top: 4px; min-height: 20px; }
+
+      /* タイトル画面コンパクト */
+      .title-screen {
+        padding: clamp(10px, 3vw, 18px);
+        gap: 8px;
+      }
+      .title-screen h1 { font-size: clamp(26px, 9vw, 40px); }
+      .title-screen p { margin: 2px 0 0; font-size: 14px; }
+      .character-stage { min-height: clamp(80px, 20vw, 120px); }
+      .character-button { width: min(32vw, 126px); }
+      .character-right { width: min(28vw, 110px); }
+      .xp-card { padding: 7px 10px; gap: 4px; }
+      .xp-emoji { font-size: 18px; }
+      .xp-bar { height: 10px; }
+      .course-groups { gap: 8px; }
+      .course-group { gap: 4px; }
+      .level-options button { padding: 8px 8px; }
+      .level-options b { font-size: clamp(15px, 4.8vw, 20px); }
+      .ranking-toggle { padding: 9px 12px; font-size: 13px; }
+
+      /* 百人一首選択コンパクト */
+      .karuta-select {
+        padding: clamp(12px, 3vw, 20px);
+        gap: 10px;
+      }
+      .karuta-select h2 { font-size: clamp(26px, 8vw, 38px); }
+      .karuta-select p { margin: 4px 0 0; }
+      .karuta-select-options { gap: 8px; }
+      .karuta-select-options button { padding: 12px 12px; }
+      .karuta-select-options b { font-size: clamp(20px, 6vw, 28px); }
+
+      /* 百人一首プレイコンパクト */
+      .karuta-mode {
+        --karuta-choice-w: clamp(96px, 30vw, 118px);
+        --karuta-kami-w: clamp(112px, 33vw, 138px);
+        --karuta-shimo-w: clamp(102px, 30vw, 128px);
+        --karuta-choice-h: clamp(120px, 37vw, 146px);
+        --karuta-kami-h: clamp(138px, 40vw, 168px);
+        --karuta-kami-area-h: calc(var(--karuta-kami-h) + 8px);
+        --karuta-shimo-h: clamp(128px, 37vw, 156px);
+        --karuta-choice-gap: 16px;
+        --karuta-action-h: 38px;
+        padding: 6px;
+        gap: 4px;
+      }
+      .karuta-nav-area { gap: 4px; }
+    }
+
+    @media (max-height: 600px) {
+      .title-screen {
+        align-content: start;
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .title-screen h1 { font-size: clamp(22px, 8vw, 32px); }
+      .character-stage { min-height: 70px; }
+      .character-button { width: min(26vw, 100px); }
+      .character-right { width: min(22vw, 86px); }
+      .course-groups { gap: 6px; }
+      .course-group h2 { font-size: 14px; }
+      .level-options button { padding: 6px 6px; }
+      .level-options b { font-size: clamp(14px, 4.5vw, 18px); }
+      .level-options span { margin-top: 2px; font-size: 10px; }
+
+      .karuta-select { padding: 8px 10px; gap: 8px; }
+      .karuta-select h2 { font-size: clamp(22px, 7vw, 32px); }
+      .karuta-select-options button { padding: 10px 10px; }
+      .karuta-select-options b { font-size: clamp(18px, 5.5vw, 24px); }
+
+      .karuta-mode {
+        --karuta-choice-w: clamp(88px, 27vw, 106px);
+        --karuta-kami-w: clamp(102px, 30vw, 122px);
+        --karuta-shimo-w: clamp(92px, 28vw, 112px);
+        --karuta-choice-h: clamp(108px, 33vw, 130px);
+        --karuta-kami-h: clamp(122px, 35vw, 148px);
+        --karuta-kami-area-h: calc(var(--karuta-kami-h) + 6px);
+        --karuta-shimo-h: clamp(114px, 33vw, 138px);
+        --karuta-choice-gap: 12px;
+        --karuta-action-h: 36px;
+        padding: 5px;
+        gap: 3px;
+      }
+      .karuta-nav-area { gap: 3px; }
+      .karuta-mode .stat { padding: 3px; }
+      .karuta-mode .stat b { font-size: clamp(14px, 4vw, 18px); }
+      .karuta-mode .stat span { font-size: 9px; }
     }
 
     /* ---------- 追加: 効果音トグル ---------- */
