@@ -15,7 +15,7 @@
   <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="preload" href="assets/chara01_kurage.png" as="image" />
   <link rel="preload" href="assets/chara02_fugu.png" as="image" />
-  <link rel="stylesheet" href="style.css?v=20260613-02" />
+  <link rel="stylesheet" href="style.css?v=20260616-karuta-01" />
 </head>
 <body>
   <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
@@ -78,8 +78,35 @@
             </button>
           </div>
         </section>
+        <section class="course-group">
+          <h2>百人一首</h2>
+          <div class="level-options karuta-level-options">
+            <button data-karuta-menu type="button">
+              <b>百人一首</b>
+              <span>上の句で取り札</span>
+            </button>
+          </div>
+        </section>
       </div>
       <button class="ranking-toggle" id="showRankings" type="button">ランキングを見る</button>
+    </section>
+
+    <section class="panel karuta-select" id="karutaSelect" hidden>
+      <div>
+        <h2>百人一首</h2>
+        <p>出題数をえらんでスタート</p>
+      </div>
+      <div class="karuta-select-options">
+        <button data-karuta-count="10" type="button">
+          <b>10枚モード</b>
+          <span>10問で終了</span>
+        </button>
+        <button data-karuta-count="100" type="button">
+          <b>100枚モード</b>
+          <span>全100首</span>
+        </button>
+      </div>
+      <button class="home-btn" id="karutaSelectHome" type="button">ホームに戻る</button>
     </section>
 
     <section class="panel ranking-screen" id="rankingScreen" hidden>
@@ -142,6 +169,33 @@
       </div>
     </aside>
 
+    <section class="panel karuta-mode" id="karutaMode" aria-live="polite" hidden>
+      <div class="karuta-nav-area">
+        <div class="timer-chip" id="karutaTimer">00:00.000</div>
+        <div class="score-row">
+          <div class="stat"><b id="karutaCount">1/10</b><span>いま</span></div>
+          <div class="stat"><b id="karutaCorrect">0</b><span>正解</span></div>
+          <div class="stat"><b id="karutaMistakes">0</b><span>ミス</span></div>
+        </div>
+      </div>
+
+      <div class="karuta-kami-area">
+        <div class="karuta-reader" id="karutaReader"></div>
+      </div>
+
+      <div class="karuta-shimo-area">
+        <div class="karuta-full-poem" id="karutaFullPoem" hidden></div>
+        <div class="karuta-penalty" id="karutaPenalty" hidden>+10秒</div>
+        <div class="karuta-choices" id="karutaChoices" aria-label="取り札"></div>
+      </div>
+
+      <div class="small-actions karuta-actions">
+        <button id="karutaRestart" type="button">はじめから</button>
+        <button id="karutaBackToSelect" type="button">枚数選択</button>
+        <button id="karutaHome" type="button">ホームに戻る</button>
+      </div>
+    </section>
+
     <section class="panel result" id="result">
       <h2 id="resultTitle">結果</h2>
       <div class="result-time" id="resultTime"></div>
@@ -155,6 +209,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260613-02"></script>
+  <script src="script.js?v=20260616-karuta-01"></script>
 </body>
 </html>

@@ -21,6 +21,17 @@ const titleRankingList = document.getElementById("titleRankingList");
 const rankingTabs = document.getElementById("rankingTabs");
 const xpCard = document.getElementById("xpCard");
 const soundToggle = document.getElementById("soundToggle");
+const karutaSelect = document.getElementById("karutaSelect");
+const karutaMode = document.getElementById("karutaMode");
+const karutaTimerEl = document.getElementById("karutaTimer");
+const karutaCountEl = document.getElementById("karutaCount");
+const karutaCorrectEl = document.getElementById("karutaCorrect");
+const karutaMistakesEl = document.getElementById("karutaMistakes");
+const karutaReaderEl = document.getElementById("karutaReader");
+const karutaFullPoemEl = document.getElementById("karutaFullPoem");
+const karutaChoicesEl = document.getElementById("karutaChoices");
+const karutaPenaltyEl = document.getElementById("karutaPenalty");
+const karutaShimoAreaEl = document.querySelector(".karuta-shimo-area");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const courses = {
@@ -110,6 +121,25 @@ let countdownToken = 0;
 let timerStart = 0;
 let elapsedMs = 0;
 let timerFrame = null;
+let activeMode = "calc";
+
+let hyakuninCards = [];
+let karutaQuestionCount = 10;
+let answeredIds = new Set();
+let currentCard = null;
+let currentChoices = [];
+let currentQuestionIndex = 0;
+let mistakeCount = 0;
+let penaltySeconds = 0;
+let revealedText = "";
+let isReading = false;
+let readingTimerIds = [];
+let soundEnabled = true;
+let karutaQuestionPool = [];
+let karutaAnsweredLocked = false;
+let karutaRemovedIds = new Set();
+let karutaHintShown = false;
+let karutaLoadPromise = null;
 
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const nonZeroRand = (min, max) => {
@@ -128,9 +158,25 @@ const signedPair = (min, max, allowZero = true) => {
 };
 const pad = (value, size = 2) => String(value).padStart(size, "0");
 const rankingKey = (course = level) => `keisanWallTimes_${course}`;
+const karutaRankingKey = (count = karutaQuestionCount) => `karuta_${count}_ranking`;
 const digitRange = (digits) => digits === 1 ? [2, 9] : [10 ** (digits - 1), (10 ** digits) - 1];
 const formatTerm = (value) => value < 0 ? `(${value})` : `${value}`;
 const formatSigned = (value) => value < 0 ? `${value}` : `+${value}`;
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, char => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  "\"": "&quot;",
+  "'": "&#39;",
+}[char]));
+const shuffle = (items) => {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 
 /* ---------- Cookieユーティリティ ---------- */
 function readCookie(name) {
@@ -145,6 +191,7 @@ function writeCookie(name, value) {
 /* ---------- 効果音（Web Audioで合成・ファイル不要） ---------- */
 let audioCtx = null;
 let soundOn = readCookie("keisanWallSound") !== "off";
+soundEnabled = soundOn;
 
 function ensureAudio() {
   if (!soundOn) return null;
@@ -175,6 +222,10 @@ const playKeyTap = () => tone(720, 0, 0.05, "triangle", 0.05);
 const playWrong = () => { tone(170, 0, 0.16, "square", 0.1); tone(140, 0.13, 0.2, "square", 0.1); };
 const playTick = () => tone(880, 0, 0.08, "square", 0.08);
 const playGo = () => { tone(1175, 0, 0.18, "square", 0.12); tone(1568, 0.06, 0.22, "square", 0.1); };
+const playReadTick = () => {
+  if (!soundEnabled) return;
+  tone(880, 0, 0.04, "sine", 0.03);
+};
 
 function playCorrect(currentStreak) {
   // 連続正解で音程がどんどん上がる（最大8段）
@@ -200,6 +251,7 @@ function renderSoundToggle() {
 
 soundToggle.addEventListener("click", () => {
   soundOn = !soundOn;
+  soundEnabled = soundOn;
   writeCookie("keisanWallSound", soundOn ? "on" : "off");
   renderSoundToggle();
   if (soundOn) playCorrect(1);
@@ -319,6 +371,43 @@ function saveTime(ms) {
   return times;
 }
 
+function readKarutaRankings(count = karutaQuestionCount) {
+  const raw = readCookie(karutaRankingKey(count));
+  if (!raw) return [];
+  try {
+    const entries = JSON.parse(raw);
+    if (!Array.isArray(entries)) return [];
+    return entries
+      .map(entry => {
+        if (Number.isFinite(entry)) return { totalMs: entry, mistakes: 0 };
+        return {
+          totalMs: Number(entry.totalMs),
+          mistakes: Number(entry.mistakes) || 0,
+        };
+      })
+      .filter(entry => Number.isFinite(entry.totalMs));
+  } catch {
+    return [];
+  }
+}
+
+function saveKarutaRanking(totalMs, mistakes, count = karutaQuestionCount) {
+  const entries = [
+    ...readKarutaRankings(count),
+    { totalMs: Math.floor(totalMs), mistakes },
+  ].sort((a, b) => a.totalMs - b.totalMs || a.mistakes - b.mistakes).slice(0, 10);
+  writeCookie(karutaRankingKey(count), JSON.stringify(entries));
+  return entries;
+}
+
+function karutaRankingMarkup(count, entries = readKarutaRankings(count)) {
+  const title = `百人一首 ${count}枚 ベスト10`;
+  if (!entries.length) return `<h3>${title}</h3><p>まだ記録がありません</p>`;
+  return `<h3>${title}</h3><ol>${entries.map((entry, i) => (
+    `<li><span>${i + 1}</span><b>${formatTime(entry.totalMs)}</b><small>ミス ${entry.mistakes}</small></li>`
+  )).join("")}</ol>`;
+}
+
 function formatTime(ms) {
   const total = Math.max(0, Math.floor(ms));
   const minutes = Math.floor(total / 60000);
@@ -338,9 +427,18 @@ function renderResultRanking(times = readTimes(level)) {
 }
 
 function renderTitleRanking() {
-  rankingTabs.innerHTML = Object.entries(courses).map(([key, course]) => (
+  const calcTabs = Object.entries(courses).map(([key, course]) => (
     `<button class="${key === rankingLevel ? "active" : ""}" data-ranking-level="${key}" type="button">${course.shortLabel}</button>`
   )).join("");
+  const karutaTabs = [10, 100].map(count => {
+    const key = `karuta_${count}`;
+    return `<button class="${key === rankingLevel ? "active" : ""}" data-ranking-level="${key}" type="button">百${count}</button>`;
+  }).join("");
+  rankingTabs.innerHTML = calcTabs + karutaTabs;
+  if (rankingLevel.startsWith("karuta_")) {
+    titleRankingList.innerHTML = karutaRankingMarkup(Number(rankingLevel.replace("karuta_", "")));
+    return;
+  }
   titleRankingList.innerHTML = rankingMarkup(rankingLevel);
 }
 
@@ -353,7 +451,11 @@ function stopTimer() {
 
 function updateTimer() {
   elapsedMs = performance.now() - timerStart;
-  timerEl.textContent = formatTime(elapsedMs);
+  if (activeMode === "karuta") {
+    karutaTimerEl.textContent = formatTime(elapsedMs + (penaltySeconds * 1000));
+  } else {
+    timerEl.textContent = formatTime(elapsedMs);
+  }
   timerFrame = requestAnimationFrame(updateTimer);
 }
 
@@ -361,7 +463,8 @@ function startTimer() {
   stopTimer();
   timerStart = performance.now();
   elapsedMs = 0;
-  timerEl.textContent = formatTime(0);
+  if (activeMode === "karuta") karutaTimerEl.textContent = formatTime(penaltySeconds * 1000);
+  else timerEl.textContent = formatTime(0);
   timerFrame = requestAnimationFrame(updateTimer);
 }
 
@@ -369,6 +472,7 @@ function resetTimer() {
   stopTimer();
   elapsedMs = 0;
   timerEl.textContent = formatTime(0);
+  karutaTimerEl.textContent = formatTime(0);
   resultTime.textContent = "";
 }
 
@@ -499,14 +603,20 @@ function beginCountdown() {
 
 function showTitle() {
   countdownToken++;
+  clearReadingTimers();
+  activeMode = "calc";
   countdownEl.hidden = true;
   resetTimer();
   current = null;
+  currentCard = null;
   locked = true;
   input = "";
   resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-result-mode");
   appEl.classList.add("title-mode");
   titleScreen.hidden = false;
+  karutaSelect.hidden = true;
+  karutaMode.hidden = true;
   rankingScreen.hidden = true;
   gameEls.forEach(el => el.hidden = true);
   renderTitleMedals();
@@ -515,23 +625,34 @@ function showTitle() {
 
 function showRankingScreen() {
   countdownToken++;
+  clearReadingTimers();
+  activeMode = "calc";
   countdownEl.hidden = true;
   resetTimer();
   current = null;
+  currentCard = null;
   locked = true;
   resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-result-mode");
   appEl.classList.add("title-mode");
   titleScreen.hidden = true;
+  karutaSelect.hidden = true;
+  karutaMode.hidden = true;
   rankingScreen.hidden = false;
   gameEls.forEach(el => el.hidden = true);
   renderTitleRanking();
 }
 
 function startLevel(nextLevel) {
+  clearReadingTimers();
+  activeMode = "calc";
   level = nextLevel;
   ensureAudio();
+  appEl.classList.remove("karuta-result-mode");
   appEl.classList.remove("title-mode");
   titleScreen.hidden = true;
+  karutaSelect.hidden = true;
+  karutaMode.hidden = true;
   rankingScreen.hidden = true;
   gameEls.forEach(el => el.hidden = false);
   document.querySelector('[data-action="sign"]').disabled = !courses[level].type;
@@ -679,6 +800,342 @@ function resetSet() {
   beginCountdown();
 }
 
+/* ---------- 百人一首 ---------- */
+function clearReadingTimers() {
+  readingTimerIds.forEach(id => clearTimeout(id));
+  readingTimerIds = [];
+  isReading = false;
+}
+
+function fullKami(card) {
+  return card.kamiLines.join("\n");
+}
+
+function fullShimo(card) {
+  return card.shimoLines.join("\n");
+}
+
+function validateHyakuninCards(cards) {
+  return cards.filter(card => (
+    Number.isFinite(card.id) &&
+    card.poet &&
+    Array.isArray(card.kamiLines) &&
+    Array.isArray(card.shimoLines) &&
+    card.kamiLines.length &&
+    card.shimoLines.length
+  ));
+}
+
+function loadHyakuninCards() {
+  if (hyakuninCards.length) return Promise.resolve(hyakuninCards);
+  if (karutaLoadPromise) return karutaLoadPromise;
+  karutaLoadPromise = fetch("assets/hyakunin_full_lines_with_poets.json", { cache: "no-store" })
+    .then(response => {
+      if (!response.ok) throw new Error("百人一首データを読み込めませんでした");
+      return response.json();
+    })
+    .then(data => {
+      hyakuninCards = validateHyakuninCards(Array.isArray(data) ? data : []);
+      if (!hyakuninCards.length) throw new Error("百人一首データが空です");
+      return hyakuninCards;
+    });
+  return karutaLoadPromise;
+}
+
+function showKarutaSelect() {
+  clearReadingTimers();
+  activeMode = "karuta";
+  countdownToken++;
+  countdownEl.hidden = true;
+  resetTimer();
+  resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-result-mode");
+  appEl.classList.add("title-mode");
+  titleScreen.hidden = true;
+  rankingScreen.hidden = true;
+  karutaMode.hidden = true;
+  karutaSelect.hidden = false;
+  gameEls.forEach(el => el.hidden = true);
+}
+
+function showKarutaError(message) {
+  karutaReaderEl.textContent = message;
+  karutaReaderEl.className = "karuta-reader bad";
+  karutaChoicesEl.innerHTML = "";
+}
+
+function startKaruta(count) {
+  activeMode = "karuta";
+  soundEnabled = soundOn;
+  ensureAudio();
+  appEl.classList.remove("karuta-result-mode");
+  karutaQuestionCount = count;
+  loadHyakuninCards()
+    .then(() => {
+      appEl.classList.remove("title-mode");
+      titleScreen.hidden = true;
+      rankingScreen.hidden = true;
+      karutaSelect.hidden = true;
+      gameEls.forEach(el => el.hidden = true);
+      karutaMode.hidden = false;
+      resetKarutaSet();
+    })
+    .catch(error => {
+      appEl.classList.remove("title-mode");
+      titleScreen.hidden = true;
+      rankingScreen.hidden = true;
+      karutaSelect.hidden = true;
+      gameEls.forEach(el => el.hidden = true);
+      karutaMode.hidden = false;
+      showKarutaError(error.message || "百人一首データを読み込めませんでした");
+    });
+}
+
+function resetKarutaSet() {
+  clearReadingTimers();
+  stopTimer();
+  answeredIds = new Set();
+  currentCard = null;
+  currentChoices = [];
+  currentQuestionIndex = 0;
+  mistakeCount = 0;
+  penaltySeconds = 0;
+  revealedText = "";
+  karutaQuestionPool = shuffle(hyakuninCards).slice(0, karutaQuestionCount);
+  karutaAnsweredLocked = false;
+  karutaRemovedIds = new Set();
+  karutaHintShown = false;
+  resultEl.classList.remove("show");
+  appEl.classList.remove("karuta-result-mode");
+  karutaMode.hidden = false;
+  karutaFullPoemEl.hidden = true;
+  karutaFullPoemEl.innerHTML = "";
+  karutaShimoAreaEl.classList.remove("is-answering");
+  karutaPenaltyEl.hidden = true;
+  karutaTimerEl.textContent = formatTime(0);
+  renderKarutaStats();
+  startTimer();
+  nextKarutaQuestion();
+}
+
+function renderKarutaStats() {
+  karutaCountEl.textContent = `${Math.min(currentQuestionIndex + 1, karutaQuestionCount)}/${karutaQuestionCount}`;
+  karutaCorrectEl.textContent = answeredIds.size;
+  karutaMistakesEl.textContent = mistakeCount;
+}
+
+function makeKarutaChoices() {
+  const available = hyakuninCards.filter(card => !answeredIds.has(card.id));
+  const wrongChoices = shuffle(available.filter(card => card.id !== currentCard.id)).slice(0, 3);
+  currentChoices = shuffle([currentCard, ...wrongChoices]);
+  karutaRemovedIds = new Set();
+}
+
+function renderKarutaChoices(correctId = null, wrongId = null) {
+  karutaChoicesEl.innerHTML = currentChoices
+    .map(card => {
+      const classes = ["karuta-choice", "karuta-card"];
+      if (correctId === card.id) classes.push("karuta-correct");
+      if (wrongId === card.id) classes.push("karuta-wrong");
+      if (karutaRemovedIds.has(card.id)) classes.push("karuta-removed");
+      if (
+        currentCard &&
+        card.id === currentCard.id &&
+        currentCard.kimariji &&
+        revealedText.replace(/\n/g, "").length >= currentCard.kimariji.length &&
+        !karutaHintShown
+      ) {
+        classes.push("karuta-correct-hint");
+        karutaHintShown = true;
+      }
+      return `
+        <button class="${classes.join(" ")}" data-card-id="${card.id}" type="button">
+          <span class="karuta-card-lines">${karutaLineMarkup(card.shimoLines, 2)}</span>
+        </button>`;
+    }).join("");
+}
+
+function karutaLineMarkup(lines, count) {
+  const fixedLines = Array.from({ length: count }, (_, index) => lines[index] || "");
+  return fixedLines.map(line => `<span>${escapeHtml(line) || "&nbsp;"}</span>`).join("");
+}
+
+function renderKarutaReader(showPoet = false) {
+  karutaReaderEl.className = "karuta-reader";
+  const lines = (revealedText || "").split("\n");
+  karutaReaderEl.innerHTML = `
+    <div class="karuta-poem-card karuta-kami-card">
+      <div class="karuta-card-lines karuta-kami-lines">
+        ${karutaLineMarkup(lines, 3)}
+      </div>
+      ${showPoet && currentCard ? `<div class="karuta-poet">${escapeHtml(currentCard.poet)}</div>` : ""}
+    </div>`;
+}
+
+function revealKarutaFullPoem() {
+  if (!currentCard) return;
+  revealedText = fullKami(currentCard);
+  renderKarutaReader(true);
+  karutaFullPoemEl.hidden = false;
+  karutaFullPoemEl.innerHTML = `
+    <div class="karuta-poem-card karuta-shimo-card karuta-correct">
+      <div class="karuta-card-lines">
+        ${karutaLineMarkup(currentCard.shimoLines, 2)}
+      </div>
+    </div>`;
+}
+
+function scheduleReadingStep(lineIndex, charIndex) {
+  const line = currentCard.kamiLines[lineIndex];
+  if (!line) {
+    isReading = false;
+    return;
+  }
+
+  if (charIndex < line.length) {
+    const delay = revealedText ? 120 : 0;
+    const timerId = setTimeout(() => {
+      if (!isReading || !currentCard) return;
+      revealedText += line[charIndex];
+      renderKarutaReader();
+      playReadTick();
+      renderKarutaChoices();
+      scheduleReadingStep(lineIndex, charIndex + 1);
+    }, delay);
+    readingTimerIds.push(timerId);
+    return;
+  }
+
+  const nextLineIndex = lineIndex + 1;
+  if (nextLineIndex >= currentCard.kamiLines.length) {
+    isReading = false;
+    return;
+  }
+
+  const timerId = setTimeout(() => {
+    if (!isReading || !currentCard) return;
+    revealedText += "\n";
+    renderKarutaReader();
+    scheduleReadingStep(nextLineIndex, 0);
+  }, 500);
+  readingTimerIds.push(timerId);
+}
+
+function startKarutaReading() {
+  clearReadingTimers();
+  revealedText = "";
+  isReading = true;
+  karutaHintShown = false;
+  renderKarutaReader();
+  scheduleReadingStep(0, 0);
+}
+
+function nextKarutaQuestion() {
+  clearReadingTimers();
+  if (currentQuestionIndex >= karutaQuestionCount) {
+    finishKarutaSet();
+    return;
+  }
+
+  currentCard = karutaQuestionPool.find(card => !answeredIds.has(card.id));
+  if (!currentCard) {
+    finishKarutaSet();
+    return;
+  }
+
+  karutaAnsweredLocked = false;
+  karutaShimoAreaEl.classList.remove("is-answering");
+  karutaFullPoemEl.hidden = true;
+  karutaFullPoemEl.innerHTML = "";
+  karutaReaderEl.className = "karuta-reader";
+  makeKarutaChoices();
+  renderKarutaStats();
+  renderKarutaChoices();
+  startKarutaReading();
+}
+
+function showKarutaPenalty() {
+  karutaPenaltyEl.hidden = false;
+  karutaPenaltyEl.classList.remove("show");
+  void karutaPenaltyEl.offsetWidth;
+  karutaPenaltyEl.classList.add("show");
+  setTimeout(() => {
+    karutaPenaltyEl.hidden = true;
+    karutaPenaltyEl.classList.remove("show");
+  }, 720);
+}
+
+function chooseKaruta(cardId) {
+  if (karutaAnsweredLocked || !currentCard) return;
+  const pickedId = Number(cardId);
+  if (pickedId !== currentCard.id) {
+    mistakeCount++;
+    penaltySeconds += 10;
+    karutaRemovedIds.add(pickedId);
+    renderKarutaStats();
+    karutaTimerEl.textContent = formatTime(elapsedMs + (penaltySeconds * 1000));
+    renderKarutaChoices(null, pickedId);
+    showKarutaPenalty();
+    playWrong();
+    return;
+  }
+
+  karutaAnsweredLocked = true;
+  answeredIds.add(currentCard.id);
+  clearReadingTimers();
+  revealKarutaFullPoem();
+  renderKarutaStats();
+  karutaShimoAreaEl.classList.add("is-answering");
+  currentChoices.forEach(card => {
+    karutaRemovedIds.add(card.id);
+  });
+  renderKarutaChoices();
+  playCorrect(1);
+  currentQuestionIndex++;
+
+  const wait = 900;
+  const timerId = setTimeout(() => nextKarutaQuestion(), wait);
+  readingTimerIds.push(timerId);
+}
+
+function finishKarutaSet() {
+  clearReadingTimers();
+  stopTimer();
+  const realMs = elapsedMs;
+  const penaltyMs = penaltySeconds * 1000;
+  const totalMs = realMs + penaltyMs;
+  const bestEntries = saveKarutaRanking(totalMs, mistakeCount, karutaQuestionCount);
+  const isNewRecord = bestEntries[0] && bestEntries[0].totalMs === Math.floor(totalMs);
+
+  currentCard = null;
+  karutaReaderEl.textContent = "おしまい！";
+  karutaFullPoemEl.hidden = true;
+  karutaShimoAreaEl.classList.remove("is-answering");
+  karutaChoicesEl.innerHTML = "";
+
+  karutaMode.hidden = true;
+  appEl.classList.add("karuta-result-mode");
+  resultEl.classList.add("show");
+  resultTitle.textContent = `百人一首 ${karutaQuestionCount}枚モード`;
+  resultTime.textContent = formatTime(totalMs);
+  resultText.innerHTML = [
+    `実時間 ${formatTime(realMs)}`,
+    `ペナルティ ${penaltySeconds}秒`,
+    `合計タイム ${formatTime(totalMs)}`,
+    `ミス ${mistakeCount}回`,
+    `正解 ${answeredIds.size}/${karutaQuestionCount}`,
+  ].join("<br>");
+  resultBadges.innerHTML = isNewRecord ? `<span class="badge-chip record">しんきろく！</span>` : "";
+  rankingEl.innerHTML = karutaRankingMarkup(karutaQuestionCount, bestEntries);
+
+  if (isNewRecord) {
+    playRecord();
+    launchConfetti(90);
+  } else {
+    playFanfare();
+  }
+}
+
 /* ---------- 入力イベント ---------- */
 document.querySelector(".keypad").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
@@ -707,11 +1164,30 @@ document.getElementById("clearInput").addEventListener("click", () => {
 
 document.getElementById("newSet").addEventListener("click", resetSet);
 document.getElementById("levelSelect").addEventListener("click", showTitle);
-document.getElementById("retryBtn").addEventListener("click", resetSet);
+document.getElementById("retryBtn").addEventListener("click", () => {
+  if (activeMode === "karuta") resetKarutaSet();
+  else resetSet();
+});
 document.getElementById("homeBtn").addEventListener("click", showTitle);
 
 document.getElementById("showRankings").addEventListener("click", showRankingScreen);
 document.getElementById("rankingHome").addEventListener("click", showTitle);
+document.querySelector("[data-karuta-menu]").addEventListener("click", showKarutaSelect);
+document.getElementById("karutaSelectHome").addEventListener("click", showTitle);
+document.getElementById("karutaRestart").addEventListener("click", resetKarutaSet);
+document.getElementById("karutaBackToSelect").addEventListener("click", showKarutaSelect);
+document.getElementById("karutaHome").addEventListener("click", showTitle);
+
+document.querySelectorAll("[data-karuta-count]").forEach(btn => {
+  btn.addEventListener("click", () => startKaruta(Number(btn.dataset.karutaCount)));
+});
+
+karutaChoicesEl.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-card-id]");
+  if (!btn) return;
+  ensureAudio();
+  chooseKaruta(btn.dataset.cardId);
+});
 
 rankingTabs.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-ranking-level]");

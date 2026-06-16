@@ -586,6 +586,30 @@
 
     .result.show { display: block; }
 
+    .app.karuta-result-mode {
+      grid-template-rows: 1fr;
+    }
+
+    .app.karuta-result-mode .result {
+      position: static;
+      display: none;
+      inset: auto;
+      max-height: none;
+      height: 100%;
+      overflow: auto;
+      padding: clamp(18px, 5vw, 28px);
+    }
+
+    .app.karuta-result-mode .result.show {
+      display: grid;
+      align-content: start;
+    }
+
+    .app.karuta-result-mode .result h2 {
+      text-align: center;
+      font-size: clamp(28px, 8vw, 42px);
+    }
+
     .result h2 {
       margin: 0 0 6px;
       font-size: 26px;
@@ -639,7 +663,7 @@
 
     .ranking li {
       display: grid;
-      grid-template-columns: 28px 1fr;
+      grid-template-columns: 28px 1fr auto;
       align-items: center;
       gap: 8px;
       font-size: 14px;
@@ -660,6 +684,13 @@
     .ranking li b {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 16px;
+    }
+
+    .ranking li small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .result-actions {
@@ -943,6 +974,359 @@
       color: var(--grape);
     }
 
+    /* ---------- 百人一首 ---------- */
+    .karuta-level-options {
+      grid-template-columns: 1fr;
+    }
+
+    .karuta-select {
+      padding: clamp(20px, 6vw, 32px);
+      display: grid;
+      align-content: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .karuta-select h2 {
+      margin: 0;
+      font-size: clamp(34px, 11vw, 54px);
+      letter-spacing: -.04em;
+      line-height: 1;
+    }
+
+    .karuta-select p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .karuta-select-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .karuta-select-options button {
+      border: 0;
+      border-radius: 16px;
+      padding: 16px 14px;
+      color: var(--ink);
+      background: white;
+      box-shadow: 0 5px 0 #d6ddec, 0 10px 18px rgba(36,48,71,.10);
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .karuta-select-options button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #d6ddec, 0 5px 12px rgba(36,48,71,.12);
+    }
+
+    .karuta-select-options b {
+      display: block;
+      font-size: clamp(24px, 7vw, 34px);
+      line-height: 1.05;
+    }
+
+    .karuta-select-options span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .karuta-mode {
+      --karuta-choice-w: clamp(116px, 36vw, 142px);
+      --karuta-kami-w: clamp(138px, 40vw, 178px);
+      --karuta-shimo-w: clamp(126px, 36vw, 158px);
+      --karuta-choice-h: clamp(150px, 46vw, 178px);
+      --karuta-kami-h: clamp(184px, 53vw, 228px);
+      --karuta-kami-area-h: calc(var(--karuta-kami-h) + 16px);
+      --karuta-shimo-h: clamp(170px, 49vw, 204px);
+      --karuta-choice-gap: 32px;
+      --karuta-action-h: 46px;
+      position: relative;
+      height: 100%;
+      max-height: none;
+      min-height: 0;
+      padding: 10px;
+      display: grid;
+      grid-template-areas:
+        "nav"
+        "kami"
+        "shimo"
+        "actions";
+      grid-template-rows: auto var(--karuta-kami-area-h) minmax(0, 1fr) var(--karuta-action-h);
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .karuta-nav-area {
+      grid-area: nav;
+      display: grid;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .karuta-nav-area .timer-chip {
+      position: static;
+      transform: none;
+      justify-self: end;
+      align-self: center;
+      margin: 0;
+    }
+
+    .karuta-kami-area {
+      grid-area: kami;
+      display: grid;
+      place-items: center;
+      height: var(--karuta-kami-area-h);
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .karuta-reader {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      min-height: 0;
+      text-align: center;
+    }
+
+    .karuta-reader.bad {
+      color: var(--bad);
+      font-size: 18px;
+    }
+
+    .karuta-shimo-area {
+      grid-area: shimo;
+      position: relative;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .karuta-full-poem {
+      grid-row: 1;
+      align-self: start;
+      justify-self: center;
+      display: grid;
+      place-items: center;
+      height: var(--karuta-shimo-h);
+      width: 100%;
+      min-height: 0;
+      z-index: 2;
+    }
+
+    .karuta-shimo-area.is-answering .karuta-full-poem {
+      position: absolute;
+      inset: 0;
+      height: auto;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+    }
+
+    .karuta-choices {
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: repeat(2, var(--karuta-choice-w));
+      grid-auto-rows: var(--karuta-choice-h);
+      align-content: start;
+      justify-content: center;
+      column-gap: 12px;
+      row-gap: var(--karuta-choice-gap);
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2px 0 20px;
+      overflow-y: auto;
+      overflow-x: visible;
+      overscroll-behavior: contain;
+    }
+
+    .karuta-shimo-area.is-answering .karuta-choices {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .karuta-choice {
+      width: var(--karuta-choice-w);
+      height: var(--karuta-choice-h);
+      min-height: 0;
+      aspect-ratio: 53 / 74;
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 5px;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.82), rgba(255,255,255,.2)),
+        #fffdf6;
+      box-shadow: 0 5px 0 #d8c7a0, 0 9px 14px rgba(36,48,71,.11);
+      cursor: pointer;
+      transition: opacity .18s ease, transform .12s ease, box-shadow .12s ease, background .12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .karuta-choice:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #d8c7a0, 0 5px 10px rgba(36,48,71,.12);
+    }
+
+    .karuta-card-lines {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      overflow: hidden;
+      writing-mode: horizontal-tb;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(17px, 4.8vw, 25px);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .karuta-poem-card {
+      width: min(100%, 220px);
+      aspect-ratio: 53 / 74;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border-radius: 8px;
+      padding: 12px 8px;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.82), rgba(255,255,255,.18)),
+        #fffdf6;
+      border: 2px solid rgba(143, 115, 62, .22);
+      box-shadow: 0 5px 0 #d8c7a0, 0 9px 14px rgba(36,48,71,.11);
+    }
+
+    .karuta-kami-card {
+      width: var(--karuta-kami-w);
+      height: var(--karuta-kami-h);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.86), rgba(255,255,255,.24)),
+        var(--paper);
+    }
+
+    .karuta-shimo-card {
+      width: var(--karuta-shimo-w);
+      height: var(--karuta-shimo-h);
+    }
+
+    .karuta-kami-lines {
+      font-size: clamp(17px, 4.7vw, 24px);
+      font-weight: 900;
+    }
+
+    .karuta-choice .karuta-card-lines,
+    .karuta-shimo-card .karuta-card-lines {
+      gap: 5px;
+      font-size: clamp(16px, 4.6vw, 23px);
+      line-height: 1.06;
+    }
+
+    .karuta-poet {
+      position: absolute;
+      left: 8px;
+      bottom: 10px;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      color: var(--muted);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(12px, 3.3vw, 16px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .karuta-card-lines span {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100%;
+      min-width: 0;
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .karuta-correct {
+      background: #e9f9f0;
+      outline: 3px solid rgba(40,166,106,.42);
+    }
+
+    .karuta-wrong {
+      background: #ffe8e4;
+      outline: 3px solid rgba(224,92,79,.34);
+    }
+
+    .karuta-removed {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .karuta-correct-hint {
+      animation: karutaHint 0.45s ease-out;
+    }
+
+    .karuta-penalty {
+      position: absolute;
+      right: 24px;
+      top: 86px;
+      z-index: 2;
+      color: var(--bad);
+      font-size: clamp(30px, 10vw, 48px);
+      font-weight: 950;
+      text-shadow: 0 3px 0 rgba(255,255,255,.85);
+      pointer-events: none;
+    }
+
+    .karuta-penalty.show {
+      animation: penalty-pop .72s ease-out both;
+    }
+
+    .karuta-actions {
+      grid-area: actions;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      height: var(--karuta-action-h);
+      min-height: 0;
+      position: static;
+      z-index: 3;
+      width: 100%;
+      transform: none;
+    }
+
+    .karuta-actions button {
+      height: var(--karuta-action-h);
+      min-height: 0;
+      padding: 0 6px;
+      display: grid;
+      place-items: center;
+    }
+
+    @keyframes karutaHint {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.06) translateY(-4px); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes penalty-pop {
+      0% { opacity: 0; transform: translateY(12px) scale(.82); }
+      35% { opacity: 1; transform: translateY(-6px) scale(1.08); }
+      100% { opacity: 0; transform: translateY(-28px) scale(1); }
+    }
+
     @keyframes badge-in {
       0% { opacity: 0; transform: translateY(8px) scale(.85); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -987,4 +1371,73 @@
       .confetti { display: none; }
       .feedback.combo { animation: none; }
       .badge-chip { animation: none; }
+      .karuta-correct-hint,
+      .karuta-penalty.show { animation: none; }
+    }
+
+    @media (min-width: 760px) {
+      .karuta-mode {
+        --karuta-choice-w: 142px;
+        --karuta-kami-w: 190px;
+        --karuta-shimo-w: 166px;
+        --karuta-choice-h: 186px;
+        --karuta-kami-h: 250px;
+        --karuta-kami-area-h: 268px;
+        --karuta-shimo-h: 224px;
+        --karuta-choice-gap: 36px;
+        --karuta-choice-area-h: 430px;
+        --karuta-action-h: 46px;
+        grid-column: 1 / -1;
+        grid-row: 1 / -1;
+        height: calc(100svh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
+        max-height: calc(100svh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
+        min-height: 0;
+      }
+
+      .karuta-select {
+        width: min(620px, 100%);
+        justify-self: center;
+      }
+
+      .karuta-reader {
+        min-height: 0;
+      }
+
+      .karuta-choice {
+        min-height: 0;
+      }
+
+      .karuta-card-lines {
+        font-size: 22px;
+      }
+
+      .karuta-choice .karuta-card-lines,
+      .karuta-shimo-card .karuta-card-lines {
+        font-size: 23px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .karuta-mode {
+        --karuta-choice-w: clamp(108px, 34vw, 126px);
+        --karuta-kami-w: clamp(130px, 39vw, 148px);
+        --karuta-shimo-w: clamp(118px, 35vw, 132px);
+        --karuta-choice-h: clamp(140px, 43vw, 166px);
+        --karuta-kami-h: clamp(170px, 50vw, 196px);
+        --karuta-kami-area-h: calc(var(--karuta-kami-h) + 14px);
+        --karuta-shimo-h: clamp(158px, 47vw, 184px);
+        --karuta-choice-gap: 30px;
+        --karuta-choice-area-h: calc((var(--karuta-choice-h) * 2) + var(--karuta-choice-gap) + 20px);
+        --karuta-action-h: 44px;
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .karuta-reader {
+        min-height: 0;
+      }
+
+      .karuta-choice {
+        min-height: 0;
+      }
     }
