@@ -1,11 +1,11 @@
-const CACHE_NAME = "keisan-wall-v20260617-karuta-02";
+const CACHE_NAME = "manabi-adventure-v20260717-learning-01";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260616-karuta-01",
-  "./script.js?v=20260616-karuta-01",
-  "./manifest.webmanifest?v=20260613-02",
-  "./icon.svg?v=20260613-02",
+  "./style.css?v=20260717-learning-01",
+  "./script.js?v=20260717-learning-01",
+  "./manifest.webmanifest?v=20260717-learning-01",
+  "./icon.svg?v=20260717-learning-01",
   "./icon-192.png",
   "./icon-512.png",
   "./assets/title-hero.png",

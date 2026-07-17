@@ -1466,6 +1466,282 @@
       .karuta-penalty.show { animation: none; }
     }
 
+    /* ---------- まなびの冒険: 学年・教科ハブ ---------- */
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--grape);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .08em;
+    }
+
+    .grade-screen,
+    .subject-select,
+    .records-screen {
+      padding: clamp(20px, 6vw, 32px);
+      display: grid;
+      align-content: center;
+      gap: 16px;
+      overflow: auto;
+    }
+
+    .grade-screen h1,
+    .subject-select h2,
+    .records-screen h2 {
+      margin: 0;
+      font-size: clamp(32px, 10vw, 50px);
+      letter-spacing: -.055em;
+      line-height: 1.03;
+    }
+
+    .grade-screen p:not(.eyebrow),
+    .subject-select p:not(.eyebrow) {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .grade-options,
+    .subject-course-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grade-options button,
+    .course-choice {
+      min-height: 94px;
+      padding: 13px 12px;
+      border: 0;
+      border-radius: 17px;
+      color: var(--ink);
+      background: white;
+      box-shadow: 0 5px 0 #d6ddec, 0 10px 18px rgba(36,48,71,.10);
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .grade-options button:active,
+    .course-choice:active,
+    .subject-card:active { transform: translateY(4px); box-shadow: 0 1px 0 #d6ddec; }
+
+    .grade-options b,
+    .course-choice b { display: block; font-size: clamp(17px, 5vw, 22px); }
+    .grade-options span,
+    .course-choice small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .course-choice > span { display: block; margin-bottom: 5px; font-size: 25px; font-weight: 950; }
+    .course-choice.resume { grid-column: 1 / -1; background: #eef9f3; }
+
+    .home-status {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .home-status span {
+      display: grid;
+      gap: 2px;
+      padding: 8px 5px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(36,48,71,.07);
+      text-align: center;
+    }
+
+    .home-status b { font-size: 15px; }
+    .home-status small { color: var(--muted); font-size: 9px; font-weight: 800; }
+
+    .mission-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #ffe2a1;
+      border-radius: 15px;
+      color: var(--ink);
+      background: #fff8dc;
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mission-card.complete { border-color: #9cdbb9; background: #ecfbf2; }
+    .mission-icon { font-size: 24px; }
+    .mission-copy { display: grid; gap: 2px; }
+    .mission-copy b { font-size: 12px; }
+    .mission-copy small { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .mission-progress { font-size: 11px; font-weight: 950; white-space: nowrap; }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .subject-card {
+      min-height: 110px;
+      padding: 12px;
+      border: 0;
+      border-radius: 18px;
+      color: var(--ink);
+      box-shadow: 0 5px 0 rgba(36,48,71,.14), 0 9px 16px rgba(36,48,71,.08);
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .subject-card span { display: block; margin-bottom: 6px; font-size: 26px; font-weight: 950; }
+    .subject-card b { display: block; font-size: clamp(16px, 4.8vw, 21px); }
+    .subject-card small { display: block; margin-top: 3px; font-size: 10px; font-weight: 800; opacity: .76; }
+    .subject-card.math { background: #eaf2ff; }
+    .subject-card.hundred { background: #fff0d3; }
+    .subject-card.english { background: #e8faf0; }
+    .subject-card.karuta { background: #f0eaff; }
+
+    .home-actions,
+    .select-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .text-action,
+    .secondary-btn {
+      border: 2px solid #d6ddec;
+      border-radius: 15px;
+      padding: 10px;
+      color: var(--ink);
+      background: white;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .home-actions .ranking-toggle { padding: 10px; }
+    .select-actions .home-btn { margin: 0; }
+    .compact-options .course-choice { min-height: 82px; }
+
+    /* ---------- 共通の問題画面 ---------- */
+    .study-mode {
+      height: 100%;
+      min-height: 0;
+      padding: 12px;
+      display: grid;
+      grid-template-rows: auto auto 8px minmax(0, 1fr) auto auto auto;
+      gap: 10px;
+      overflow: auto;
+    }
+
+    .study-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .study-exit,
+    .study-actions button {
+      border: 0;
+      border-radius: 11px;
+      padding: 8px 10px;
+      color: var(--ink);
+      background: #edf1fa;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .study-topbar .timer-chip { position: static; transform: none; }
+    .study-stats { display: flex; justify-content: space-between; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 900; }
+    .study-progress { height: 8px; overflow: hidden; border-radius: 999px; background: #e8edf7; }
+    .study-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--grape), #79c7ff); transition: width .25s ease; }
+
+    .study-question-card {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      min-height: 142px;
+      padding: 15px;
+      border-radius: 19px;
+      background: var(--paper);
+      text-align: center;
+    }
+
+    .study-kicker { margin: 0; color: var(--muted); font-size: 12px; font-weight: 900; }
+    .study-question { margin: 7px 0; font-size: clamp(30px, 10vw, 52px); font-weight: 950; letter-spacing: -.04em; line-height: 1.12; overflow-wrap: anywhere; }
+    .study-example { margin: 0; color: var(--grape); font-size: 13px; font-weight: 900; }
+    .study-feedback { min-height: 20px; margin: 4px 0 0; color: var(--muted); font-size: 13px; font-weight: 900; }
+    .study-feedback.good { color: var(--good); }
+    .study-feedback.bad { color: var(--bad); }
+    .study-feedback.hint { color: #a66d00; }
+
+    .study-choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .study-choices button {
+      min-height: 58px;
+      border: 2px solid #dfe6f5;
+      border-radius: 15px;
+      padding: 8px;
+      color: var(--ink);
+      background: white;
+      box-shadow: 0 3px 0 #d6ddec;
+      font-size: clamp(15px, 4.6vw, 20px);
+      font-weight: 900;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+
+    .study-choices button.correct { color: #137c48; border-color: #8fddb8; background: #eaf9f0; }
+    .numeric-answer { grid-column: 1 / -1; min-height: 50px; padding: 7px; border: 2px solid #dfe6f5; border-radius: 15px; background: white; font-size: 30px; font-weight: 950; text-align: center; }
+    .study-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .study-keypad button { min-height: 43px; border: 0; border-radius: 12px; background: #eef2fb; color: var(--ink); font-size: 19px; font-weight: 950; cursor: pointer; }
+    .study-keypad button.enter { color: white; background: var(--grape); }
+    .study-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+    .study-grid-wrap { max-height: 148px; overflow: auto; padding: 3px; border: 1px solid #e2e8f4; border-radius: 12px; background: #f7faff; }
+    .hundred-grid { display: grid; grid-template-columns: repeat(var(--grid-columns, 10), minmax(24px, 1fr)); gap: 3px; min-width: 300px; }
+    .hundred-cell { display: grid; aspect-ratio: 1; place-items: center; border-radius: 5px; color: #8790a3; background: white; font-size: 10px; font-weight: 800; }
+    .hundred-cell.current { outline: 3px solid var(--grape); color: var(--ink); }
+    .hundred-cell.done { color: #137c48; background: #e9f9f0; }
+    .hundred-cell.missed { color: #b84439; background: #fff0ed; }
+    .hundred-cell.head { color: var(--ink); background: #dfe9ff; font-weight: 950; }
+
+    /* ---------- きろく ---------- */
+    .records-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .records-summary div { display: grid; gap: 4px; padding: 10px 6px; border-radius: 13px; background: #f5f7fc; text-align: center; }
+    .records-summary b { font-size: 14px; }
+    .records-summary span { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .records-calendar { display: grid; gap: 7px; padding: 12px; border-radius: 15px; background: var(--paper); font-size: 12px; }
+    .records-calendar > div { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+    .records-calendar span { display: grid; aspect-ratio: 1; place-items: center; border-radius: 999px; color: var(--muted); background: #e9edf5; font-size: 10px; font-weight: 900; }
+    .records-calendar span.learned { color: white; background: var(--good); }
+
+    @media (max-height: 720px) {
+      .home-status { display: none; }
+      .mission-card { padding: 7px 9px; }
+      .subject-card { min-height: 88px; padding: 9px; }
+      .subject-card span { margin-bottom: 3px; font-size: 20px; }
+      .subject-card small { font-size: 9px; }
+      .study-mode { padding: 8px; gap: 6px; }
+      .study-question-card { min-height: 110px; padding: 8px; }
+      .study-question { font-size: clamp(26px, 9vw, 42px); }
+      .study-choices button { min-height: 47px; }
+      .study-grid-wrap { max-height: 100px; }
+    }
+
+    @media (min-width: 760px) {
+      .study-mode { grid-column: 1 / -1; grid-row: 1 / -1; max-width: 700px; width: 100%; justify-self: center; }
+      .grade-screen, .subject-select, .records-screen { width: min(650px, 100%); justify-self: center; }
+      .subject-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
     @media (min-width: 760px) {
       .app.karuta-play-mode {
         height: calc(100svh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)));

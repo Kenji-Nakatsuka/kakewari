@@ -6,16 +6,16 @@
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta name="theme-color" content="#ffd166" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="ケイサンの壁" />
+  <meta name="apple-mobile-web-app-title" content="まなびの冒険" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <title>ケイサンの壁</title>
-  <link rel="manifest" href="manifest.webmanifest?v=20260613-02" />
-  <link rel="icon" href="icon.svg?v=20260613-02" type="image/svg+xml" />
+  <title>まなびの冒険</title>
+  <link rel="manifest" href="manifest.webmanifest?v=20260717-learning-01" />
+  <link rel="icon" href="icon.svg?v=20260717-learning-01" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="preload" href="assets/chara01_kurage.png" as="image" />
   <link rel="preload" href="assets/chara02_fugu.png" as="image" />
-  <link rel="stylesheet" href="style.css?v=20260616-karuta-01" />
+  <link rel="stylesheet" href="style.css?v=20260717-learning-01" />
 </head>
 <body>
   <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
@@ -23,10 +23,25 @@
   <main class="app">
     <div class="countdown" id="countdown" hidden>3</div>
 
+    <section class="panel grade-screen" id="gradeScreen" hidden>
+      <div>
+        <p class="eyebrow">まなびの冒険へようこそ！</p>
+        <h1>いまの学年を<br />えらぼう</h1>
+        <p>あとでホームからいつでも変えられるよ</p>
+      </div>
+      <div class="grade-options" aria-label="学年選択">
+        <button data-grade="g4" type="button"><b>小学4年生</b><span>算数の土台づくり</span></button>
+        <button data-grade="g5" type="button"><b>小学5年生</b><span>小数・分数に挑戦</span></button>
+        <button data-grade="g6" type="button"><b>小学6年生</b><span>中学への準備</span></button>
+        <button data-grade="j1" type="button"><b>中学1年生</b><span>数学・英語の基礎</span></button>
+      </div>
+    </section>
+
     <section class="panel title-screen" id="titleScreen">
       <div>
-        <h1>ケイサンの壁</h1>
-        <p>レベルをえらんでスタート</p>
+        <p class="eyebrow">毎日ちょっとずつ、強くなる</p>
+        <h1>まなびの冒険</h1>
+        <p>きょうは何をやってみる？</p>
       </div>
       <div class="character-stage" aria-label="キャラクター">
         <button class="character-button character-left" type="button" aria-label="くらげのキャラクター">
@@ -37,7 +52,15 @@
         </button>
       </div>
       <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
-      <div class="course-groups" aria-label="レベル選択">
+      <div class="home-status" id="homeStatus" aria-label="学習の記録"></div>
+      <button class="mission-card" id="missionCard" type="button" aria-label="今日のミッション"></button>
+      <div class="subject-grid" aria-label="教科を選ぶ">
+        <button class="subject-card math" data-open-panel="math" type="button"><span>➗</span><b>算数・数学</b><small>学年にあわせて練習</small></button>
+        <button class="subject-card hundred" data-open-panel="hundred" type="button"><span>💯</span><b>100マス</b><small>すばやく正確に</small></button>
+        <button class="subject-card english" data-open-panel="english" type="button"><span>ABC</span><b>英語</b><small>ことばをふやそう</small></button>
+        <button class="subject-card karuta" data-karuta-menu type="button"><span>札</span><b>百人一首</b><small>上の句で取り札</small></button>
+      </div>
+      <div class="course-groups legacy-course-groups" id="legacyCourses" aria-label="旧計算チャレンジ" hidden>
         <section class="course-group">
           <h2>小学生</h2>
           <div class="level-options">
@@ -88,7 +111,78 @@
           </div>
         </section>
       </div>
-      <button class="ranking-toggle" id="showRankings" type="button">ランキングを見る</button>
+      <div class="home-actions">
+        <button class="ranking-toggle" id="showRecords" type="button">きろくを見る</button>
+        <button class="text-action" id="changeGrade" type="button">学年を変える</button>
+      </div>
+    </section>
+
+    <section class="panel subject-select" id="mathSelect" hidden>
+      <div>
+        <p class="eyebrow" id="mathSelectGrade">小学4年生</p>
+        <h2>算数・数学</h2>
+        <p>コースをえらんで10問チャレンジ</p>
+      </div>
+      <div class="subject-course-list" id="mathCourseList"></div>
+      <div class="select-actions">
+        <button class="secondary-btn" id="legacyCalcBtn" type="button">タイムアタック</button>
+        <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      </div>
+    </section>
+
+    <section class="panel subject-select" id="hundredSelect" hidden>
+      <div>
+        <p class="eyebrow">正確さを大事にしよう</p>
+        <h2>100マス計算</h2>
+        <p>マスをうめて、自分の記録に挑戦！</p>
+      </div>
+      <div class="subject-course-list compact-options" id="hundredCourseList"></div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel subject-select" id="englishSelect" hidden>
+      <div>
+        <p class="eyebrow" id="englishSelectGrade">小学4年生</p>
+        <h2>英語</h2>
+        <p>新しいことば7問＋ふくしゅう3問</p>
+      </div>
+      <div class="subject-course-list compact-options" id="englishCourseList"></div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel study-mode" id="studyMode" aria-live="polite" hidden>
+      <div class="study-topbar">
+        <button class="study-exit" id="studyExit" type="button">← ホーム</button>
+        <div class="timer-chip" id="studyTimer">00:00</div>
+      </div>
+      <div class="study-stats">
+        <span id="studyCount">1/10</span><span id="studyCorrect">正解 0</span><span id="studyCombo">コンボ 0</span>
+      </div>
+      <div class="study-progress"><span id="studyProgress"></span></div>
+      <div class="study-grid-wrap" id="studyGridWrap" hidden><div class="hundred-grid" id="studyGrid"></div></div>
+      <div class="study-question-card">
+        <p class="study-kicker" id="studyKicker"></p>
+        <p class="study-question" id="studyQuestion"></p>
+        <p class="study-example" id="studyExample" hidden></p>
+        <p class="study-feedback" id="studyFeedback">こたえをえらぼう</p>
+      </div>
+      <div class="study-choices" id="studyChoices"></div>
+      <div class="study-keypad" id="studyKeypad" hidden></div>
+      <div class="study-actions">
+        <button id="studyHint" type="button">ヒント</button>
+        <button id="studyPause" type="button">中断して保存</button>
+      </div>
+    </section>
+
+    <section class="panel records-screen" id="recordsScreen" hidden>
+      <div>
+        <p class="eyebrow">自分の成長を見よう</p>
+        <h2>きろく</h2>
+      </div>
+      <div class="records-summary" id="recordsSummary"></div>
+      <div class="records-calendar" id="recordsCalendar" aria-label="学習カレンダー"></div>
+      <div class="ranking" id="recordsRanking"></div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
     </section>
 
     <section class="panel karuta-select" id="karutaSelect" hidden>
@@ -209,6 +303,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260616-karuta-01"></script>
+  <script src="script.js?v=20260717-learning-01"></script>
 </body>
 </html>
