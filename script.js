@@ -1,5 +1,8 @@
 const appEl = document.querySelector(".app");
 const titleScreen = document.getElementById("titleScreen");
+const profileScreen = document.getElementById("profileScreen");
+const bottomNav = document.getElementById("bottomNav");
+const primaryTabButtons = bottomNav.querySelectorAll("[data-primary-tab]");
 const gameEls = document.querySelectorAll(".game-ui");
 const countdownEl = document.getElementById("countdown");
 const timerEl = document.getElementById("timer");
@@ -21,6 +24,7 @@ const titleRankingList = document.getElementById("titleRankingList");
 const rankingTabs = document.getElementById("rankingTabs");
 const xpCard = document.getElementById("xpCard");
 const soundToggle = document.getElementById("soundToggle");
+const soundStatus = document.getElementById("soundStatus");
 const karutaSelect = document.getElementById("karutaSelect");
 const karutaMode = document.getElementById("karutaMode");
 const karutaTimerEl = document.getElementById("karutaTimer");
@@ -247,6 +251,9 @@ function playRecord() {
 function renderSoundToggle() {
   soundToggle.textContent = soundOn ? "🔊" : "🔇";
   soundToggle.classList.toggle("off", !soundOn);
+  soundToggle.setAttribute("aria-pressed", String(soundOn));
+  soundToggle.setAttribute("aria-label", soundOn ? "効果音をオフにする" : "効果音をオンにする");
+  soundStatus.textContent = soundOn ? "オン" : "オフ";
 }
 
 soundToggle.addEventListener("click", () => {
@@ -256,6 +263,22 @@ soundToggle.addEventListener("click", () => {
   renderSoundToggle();
   if (soundOn) playCorrect(1);
 });
+
+function showPrimaryNavigation(activeTab) {
+  bottomNav.hidden = false;
+  appEl.classList.add("primary-nav-mode");
+  primaryTabButtons.forEach(button => {
+    const active = button.dataset.primaryTab === activeTab;
+    button.classList.toggle("active", active);
+    if (active) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+}
+
+function hidePrimaryNavigation() {
+  bottomNav.hidden = true;
+  appEl.classList.remove("primary-nav-mode");
+}
 
 /* ---------- 紙吹雪 ---------- */
 function launchConfetti(count = 90) {
@@ -631,6 +654,7 @@ function showTitle() {
   renderTitleMedals();
   renderXpCard();
   syncLearningHome();
+  showPrimaryNavigation("learning");
 }
 
 function showRankingScreen() {
@@ -1277,6 +1301,7 @@ var learningState = null;
 var learningHubReady = false;
 var studySession = null;
 var studyTimerFrame = null;
+var gradeSelectionReturnTab = "learning";
 
 const LEARNING_STORE_KEY = "manabiAdventureV2";
 const gradeMeta = {
@@ -1417,10 +1442,11 @@ function completeLearningSession(summary) {
 }
 
 function hideLearningPanels() {
-  ["gradeScreen", "mathSelect", "hundredSelect", "englishSelect", "japaneseSelect", "scienceSelect", "socialSelect", "studyMode", "recordsScreen"]
+  ["gradeScreen", "profileScreen", "mathSelect", "hundredSelect", "englishSelect", "japaneseSelect", "scienceSelect", "socialSelect", "studyMode", "recordsScreen"]
     .map(id => document.getElementById(id))
     .filter(Boolean)
     .forEach(el => { el.hidden = true; });
+  hidePrimaryNavigation();
   stopStudyTimer();
 }
 
@@ -1443,6 +1469,8 @@ function syncLearningHome() {
   document.getElementById("japaneseSelectGrade").textContent = grade.label;
   document.getElementById("scienceSelectGrade").textContent = grade.label;
   document.getElementById("socialSelectGrade").textContent = grade.label;
+  document.getElementById("profileGradeLabel").textContent = grade.label;
+  document.getElementById("profileGradeSetting").textContent = grade.label;
   renderMathCourses();
   renderHundredCourses();
   renderEnglishCourses();
@@ -1456,6 +1484,22 @@ function showGradeScreen() {
   resultEl.classList.remove("show");
   appEl.classList.add("title-mode");
   gradeScreenEl.hidden = false;
+}
+
+function showProfile() {
+  hideLearningPanels();
+  titleScreen.hidden = true;
+  rankingScreen.hidden = true;
+  resultEl.classList.remove("show");
+  karutaSelect.hidden = true;
+  karutaMode.hidden = true;
+  gameEls.forEach(el => { el.hidden = true; });
+  appEl.classList.remove("karuta-play-mode", "karuta-result-mode");
+  appEl.classList.add("title-mode");
+  syncLearningHome();
+  renderSoundToggle();
+  profileScreen.hidden = false;
+  showPrimaryNavigation("profile");
 }
 
 function showSubjectPanel(panel) {
@@ -2186,9 +2230,14 @@ function showRecords() {
   titleScreen.hidden = true;
   rankingScreen.hidden = true;
   resultEl.classList.remove("show");
+  karutaSelect.hidden = true;
+  karutaMode.hidden = true;
+  gameEls.forEach(el => { el.hidden = true; });
+  appEl.classList.remove("karuta-play-mode", "karuta-result-mode");
   appEl.classList.add("title-mode");
   recordsScreenEl.hidden = false;
   renderRecords();
+  showPrimaryNavigation("records");
 }
 
 function initializeLearningHub() {
@@ -2197,7 +2246,9 @@ function initializeLearningHub() {
   document.querySelectorAll("[data-grade]").forEach(button => button.addEventListener("click", () => {
     learningState.profile.grade = button.dataset.grade;
     saveLearningState();
-    showTitle();
+    if (gradeSelectionReturnTab === "profile") showProfile();
+    else showTitle();
+    gradeSelectionReturnTab = "learning";
   }));
   document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => {
     const panels = {
@@ -2211,8 +2262,17 @@ function initializeLearningHub() {
     showSubjectPanel(panels[button.dataset.openPanel]);
   }));
   document.querySelectorAll("[data-panel-home]").forEach(button => button.addEventListener("click", showTitle));
-  document.getElementById("showRecords").addEventListener("click", showRecords);
-  document.getElementById("changeGrade").addEventListener("click", showGradeScreen);
+  bottomNav.addEventListener("click", event => {
+    const button = event.target.closest("[data-primary-tab]");
+    if (!button) return;
+    if (button.dataset.primaryTab === "records") showRecords();
+    else if (button.dataset.primaryTab === "profile") showProfile();
+    else showTitle();
+  });
+  document.getElementById("changeGrade").addEventListener("click", () => {
+    gradeSelectionReturnTab = "profile";
+    showGradeScreen();
+  });
   document.getElementById("legacyCalcBtn").addEventListener("click", () => {
     mathSelectEl.hidden = true; titleScreen.hidden = false; legacyCoursesEl.hidden = false;
   });

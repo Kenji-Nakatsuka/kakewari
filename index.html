@@ -15,11 +15,9 @@
   <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="preload" href="assets/chara01_kurage.png" as="image" />
   <link rel="preload" href="assets/chara02_fugu.png" as="image" />
-  <link rel="stylesheet" href="style.css?v=20260725-subjects-02" />
+  <link rel="stylesheet" href="style.css?v=20260725-bottom-nav-01" />
 </head>
 <body>
-  <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
-
   <main class="app">
     <div class="countdown" id="countdown" hidden>3</div>
 
@@ -27,7 +25,7 @@
       <div>
         <p class="eyebrow">まなびの冒険へようこそ！</p>
         <h1>いまの学年を<br />えらぼう</h1>
-        <p>あとでホームからいつでも変えられるよ</p>
+        <p>あとでプロフィールからいつでも変えられるよ</p>
       </div>
       <div class="grade-options" aria-label="学年選択">
         <button data-grade="g4" type="button"><b>小学4年生</b><span>算数の土台づくり</span></button>
@@ -37,26 +35,12 @@
       </div>
     </section>
 
-    <section class="panel title-screen" id="titleScreen">
-      <header class="home-hero">
-        <div class="home-copy">
-          <p class="eyebrow">毎日ちょっとずつ、強くなる</p>
-          <h1>まなびの冒険</h1>
-          <p>きょうは何をやってみる？</p>
-        </div>
-        <div class="character-stage" aria-label="キャラクター">
-          <button class="character-button character-left" type="button" aria-label="くらげのキャラクター">
-            <img src="assets/chara01_kurage.png" alt="" />
-          </button>
-          <button class="character-button character-right" type="button" aria-label="ふぐのキャラクター">
-            <img src="assets/chara02_fugu.png" alt="" />
-          </button>
-        </div>
+    <section class="panel title-screen learning-screen primary-screen" id="titleScreen">
+      <header class="screen-heading">
+        <p class="eyebrow">きょうも一歩ずつ</p>
+        <h1>学習</h1>
+        <p>取り組む教科をえらぼう</p>
       </header>
-      <section class="home-progress" aria-label="現在の学習状況">
-        <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
-        <div class="home-status" id="homeStatus" aria-label="学習の記録"></div>
-      </section>
       <div class="mission-card" id="missionCard"></div>
       <section class="learning-menu" aria-labelledby="learningMenuTitle">
         <div class="section-heading">
@@ -124,10 +108,41 @@
           </div>
         </section>
       </div>
-      <div class="home-actions">
-        <button class="ranking-toggle" id="showRecords" type="button"><span aria-hidden="true">★</span>きろくを見る</button>
-        <button class="text-action" id="changeGrade" type="button"><span aria-hidden="true">↻</span>学年を変える</button>
-      </div>
+    </section>
+
+    <section class="panel profile-screen primary-screen" id="profileScreen" hidden>
+      <header class="home-hero profile-hero">
+        <div class="home-copy">
+          <p class="eyebrow" id="profileGradeLabel">小学4年生</p>
+          <h1>プロフィール</h1>
+          <p>これまでの成長を確認しよう</p>
+        </div>
+        <div class="character-stage" aria-label="キャラクター">
+          <button class="character-button character-left" type="button" aria-label="くらげのキャラクター">
+            <img src="assets/chara01_kurage.png" alt="" />
+          </button>
+          <button class="character-button character-right" type="button" aria-label="ふぐのキャラクター">
+            <img src="assets/chara02_fugu.png" alt="" />
+          </button>
+        </div>
+      </header>
+      <section class="home-progress" aria-label="現在の学習状況">
+        <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
+        <div class="home-status" id="homeStatus" aria-label="学習の記録"></div>
+      </section>
+      <section class="profile-settings" aria-labelledby="profileSettingsTitle">
+        <h2 id="profileSettingsTitle">設定</h2>
+        <div class="setting-row">
+          <span class="setting-icon sound-setting-icon" aria-hidden="true"></span>
+          <span class="setting-copy"><b>効果音</b><small id="soundStatus">オン</small></span>
+          <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音をオフにする" aria-pressed="true">🔊</button>
+        </div>
+        <button class="setting-row setting-button" id="changeGrade" type="button">
+          <span class="setting-icon grade-setting-icon" aria-hidden="true">学</span>
+          <span class="setting-copy"><b>学年</b><small id="profileGradeSetting">小学4年生</small></span>
+          <span class="setting-chevron" aria-hidden="true">›</span>
+        </button>
+      </section>
     </section>
 
     <section class="panel subject-select" id="mathSelect" hidden>
@@ -139,7 +154,7 @@
       <div class="subject-course-list" id="mathCourseList"></div>
       <div class="select-actions">
         <button class="secondary-btn" id="legacyCalcBtn" type="button">タイムアタック</button>
-        <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+        <button class="home-btn" data-panel-home type="button">学習に戻る</button>
       </div>
     </section>
 
@@ -150,7 +165,7 @@
         <p>マスをうめて、自分の記録に挑戦！</p>
       </div>
       <div class="subject-course-list compact-options" id="hundredCourseList"></div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      <button class="home-btn" data-panel-home type="button">学習に戻る</button>
     </section>
 
     <section class="panel subject-select" id="englishSelect" hidden>
@@ -160,7 +175,7 @@
         <p>新しいことば7問＋ふくしゅう3問</p>
       </div>
       <div class="subject-course-list compact-options" id="englishCourseList"></div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      <button class="home-btn" data-panel-home type="button">学習に戻る</button>
     </section>
 
     <section class="panel subject-select" id="japaneseSelect" hidden>
@@ -172,7 +187,7 @@
       <div class="subject-course-list compact-options">
         <button class="course-choice" data-knowledge-kind="japanese" type="button"><span>あ</span><b>ことば・漢字ミックス</b><small>文に合う答えをえらぼう</small></button>
       </div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      <button class="home-btn" data-panel-home type="button">学習に戻る</button>
     </section>
 
     <section class="panel subject-select" id="scienceSelect" hidden>
@@ -184,7 +199,7 @@
       <div class="subject-course-list compact-options">
         <button class="course-choice" data-knowledge-kind="science" type="button"><span>理</span><b>理科まとめ</b><small>4つから答えをえらぼう</small></button>
       </div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      <button class="home-btn" data-panel-home type="button">学習に戻る</button>
     </section>
 
     <section class="panel subject-select" id="socialSelect" hidden>
@@ -196,12 +211,12 @@
       <div class="subject-course-list compact-options">
         <button class="course-choice" data-knowledge-kind="social" type="button"><span>社</span><b>社会まとめ</b><small>4つから答えをえらぼう</small></button>
       </div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+      <button class="home-btn" data-panel-home type="button">学習に戻る</button>
     </section>
 
     <section class="panel study-mode" id="studyMode" aria-live="polite" hidden>
       <div class="study-topbar">
-        <button class="study-exit" id="studyExit" type="button">← ホーム</button>
+        <button class="study-exit" id="studyExit" type="button">← 学習</button>
         <div class="timer-chip" id="studyTimer">00:00</div>
       </div>
       <div class="study-stats">
@@ -223,7 +238,7 @@
       </div>
     </section>
 
-    <section class="panel records-screen" id="recordsScreen" hidden>
+    <section class="panel records-screen primary-screen" id="recordsScreen" hidden>
       <div>
         <p class="eyebrow">自分の成長を見よう</p>
         <h2>きろく</h2>
@@ -231,7 +246,6 @@
       <div class="records-summary" id="recordsSummary"></div>
       <div class="records-calendar" id="recordsCalendar" aria-label="学習カレンダー"></div>
       <div class="ranking" id="recordsRanking"></div>
-      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
     </section>
 
     <section class="panel karuta-select" id="karutaSelect" hidden>
@@ -249,7 +263,7 @@
           <span>全100首</span>
         </button>
       </div>
-      <button class="home-btn" id="karutaSelectHome" type="button">ホームに戻る</button>
+      <button class="home-btn" id="karutaSelectHome" type="button">学習に戻る</button>
     </section>
 
     <section class="panel ranking-screen" id="rankingScreen" hidden>
@@ -263,7 +277,7 @@
         </div>
         <div class="ranking-tabs" id="rankingTabs" aria-label="ランキングのコース選択"></div>
         <div class="ranking" id="titleRankingList"></div>
-        <button class="home-btn" id="rankingHome" type="button">ホームに戻る</button>
+        <button class="home-btn" id="rankingHome" type="button">学習に戻る</button>
       </div>
     </section>
 
@@ -335,7 +349,7 @@
       <div class="small-actions karuta-actions">
         <button id="karutaRestart" type="button">はじめから</button>
         <button id="karutaBackToSelect" type="button">枚数選択</button>
-        <button id="karutaHome" type="button">ホームに戻る</button>
+        <button id="karutaHome" type="button">学習に戻る</button>
       </div>
     </section>
 
@@ -347,11 +361,26 @@
       <div class="ranking" id="ranking"></div>
       <div class="result-actions">
         <button class="restart" id="retryBtn" type="button">もう1回</button>
-        <button class="home-btn" id="homeBtn" type="button">ホームに戻る</button>
+        <button class="home-btn" id="homeBtn" type="button">学習に戻る</button>
       </div>
     </section>
   </main>
 
-  <script src="script.js?v=20260725-subjects-02"></script>
+  <nav class="bottom-nav" id="bottomNav" aria-label="メインメニュー" hidden>
+    <button data-primary-tab="records" type="button">
+      <span class="nav-indicator"><span class="nav-icon records-icon" aria-hidden="true"></span></span>
+      <span class="nav-label">記録</span>
+    </button>
+    <button data-primary-tab="profile" type="button">
+      <span class="nav-indicator"><span class="nav-icon profile-icon" aria-hidden="true"></span></span>
+      <span class="nav-label">プロフィール</span>
+    </button>
+    <button data-primary-tab="learning" type="button">
+      <span class="nav-indicator"><span class="nav-icon learning-icon" aria-hidden="true"></span></span>
+      <span class="nav-label">学習</span>
+    </button>
+  </nav>
+
+  <script src="script.js?v=20260725-bottom-nav-01"></script>
 </body>
 </html>
