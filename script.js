@@ -1296,6 +1296,9 @@ const gradeScreenEl = document.getElementById("gradeScreen");
 const mathSelectEl = document.getElementById("mathSelect");
 const hundredSelectEl = document.getElementById("hundredSelect");
 const englishSelectEl = document.getElementById("englishSelect");
+const japaneseSelectEl = document.getElementById("japaneseSelect");
+const scienceSelectEl = document.getElementById("scienceSelect");
+const socialSelectEl = document.getElementById("socialSelect");
 const studyModeEl = document.getElementById("studyMode");
 const recordsScreenEl = document.getElementById("recordsScreen");
 const homeStatusEl = document.getElementById("homeStatus");
@@ -1414,7 +1417,7 @@ function completeLearningSession(summary) {
 }
 
 function hideLearningPanels() {
-  ["gradeScreen", "mathSelect", "hundredSelect", "englishSelect", "studyMode", "recordsScreen"]
+  ["gradeScreen", "mathSelect", "hundredSelect", "englishSelect", "japaneseSelect", "scienceSelect", "socialSelect", "studyMode", "recordsScreen"]
     .map(id => document.getElementById(id))
     .filter(Boolean)
     .forEach(el => { el.hidden = true; });
@@ -1437,6 +1440,9 @@ function syncLearningHome() {
   missionCardEl.classList.toggle("complete", learningState.mission.claimed);
   document.getElementById("mathSelectGrade").textContent = grade.label;
   document.getElementById("englishSelectGrade").textContent = grade.label;
+  document.getElementById("japaneseSelectGrade").textContent = grade.label;
+  document.getElementById("scienceSelectGrade").textContent = grade.label;
+  document.getElementById("socialSelectGrade").textContent = grade.label;
   renderMathCourses();
   renderHundredCourses();
   renderEnglishCourses();
@@ -1642,6 +1648,155 @@ function createEnglishQuestions(direction) {
   return shuffle(selected).map(item => makeEnglishQuestion(item, direction, items));
 }
 
+const knowledgeContent = {
+  social: {
+    g4: [
+      ["日本にある都道府県の数は？", "47", "都・道・府・県をすべて合わせます。", "日本には47の都道府県があります。"],
+      ["日本でいちばん高い山は？", "富士山", "静岡県と山梨県にまたがる山です。", "日本でいちばん高い山は富士山です。"],
+      ["日本の首都は？", "東京都", "国会議事堂がある都道府県です。", "日本の首都は東京都です。"],
+      ["川の水をきれいにして水道水にする施設は？", "浄水場", "水を『浄化』する場所です。", "浄水場では川などの水を安全な水道水にします。"],
+      ["火事を消したり救急活動をしたりする施設は？", "消防署", "消防車や救急車が出動します。", "消防署は消火や救急などの仕事をします。"],
+      ["集めたごみを燃やして処理する施設は？", "清掃工場", "ごみ収集車が運び込みます。", "燃やせるごみは主に清掃工場で処理されます。"],
+      ["交通安全や事件の防止に取り組む施設は？", "警察署", "警察官が働く場所です。", "警察署は地域の安全を守ります。"],
+      ["市や町が地域のために定めるきまりを何という？", "条例", "国の法律とは別の、地域のきまりです。", "地方公共団体が定めるきまりを条例といいます。"],
+    ],
+    g5: [
+      ["越後平野が広がり、米作りがさかんな都道府県は？", "新潟県", "日本海側にある県です。", "新潟県は越後平野を中心に米作りがさかんです。"],
+      ["自動車工業が特にさかんな都道府県は？", "愛知県", "中京工業地帯の中心です。", "愛知県では自動車やその部品の生産がさかんです。"],
+      ["日本の南側を流れる暖流は？", "黒潮", "日本海流とも呼ばれます。", "黒潮は日本の南岸に沿って流れる暖流です。"],
+      ["魚や貝などを人工的に育てて出荷する漁業は？", "養殖業", "いけすなどで育てます。", "魚や貝を育てて出荷する漁業を養殖業といいます。"],
+      ["原料を輸入し、製品にして輸出する貿易は？", "加工貿易", "原料を『加工』して価値を高めます。", "原料を輸入して製品を輸出する形を加工貿易といいます。"],
+      ["関東から北九州へ工業地域が帯状に続く地域は？", "太平洋ベルト", "太平洋側に工業地帯が連なります。", "工業が集中する帯状の地域を太平洋ベルトといいます。"],
+      ["ビニールハウスなどで出荷時期を早める栽培は？", "促成栽培", "温暖な気候や施設を使います。", "出荷時期を早める栽培を促成栽培といいます。"],
+      ["国の海岸から一定範囲で、国の主権が及ぶ海は？", "領海", "国の『領域』に含まれる海です。", "海岸から一定範囲の、国の主権が及ぶ海を領海といいます。"],
+    ],
+    g6: [
+      ["縄文時代に使われた、縄目の模様がある土器は？", "縄文土器", "時代の名前が付いています。", "縄目の模様がある土器を縄文土器といいます。"],
+      ["邪馬台国の女王は？", "卑弥呼", "中国の歴史書にも登場します。", "邪馬台国の女王は卑弥呼です。"],
+      ["645年に始まった政治の改革は？", "大化の改新", "中大兄皇子らが進めました。", "645年に大化の改新が始まりました。"],
+      ["710年に都が置かれた場所は？", "平城京", "現在の奈良市付近です。", "710年、奈良に平城京が置かれました。"],
+      ["鎌倉に武士の政権を開いた人物は？", "源頼朝", "征夷大将軍になった人物です。", "源頼朝は鎌倉に武士の政権を開きました。"],
+      ["江戸幕府を開いた人物は？", "徳川家康", "関ヶ原の戦いに勝利しました。", "徳川家康は1603年に江戸幕府を開きました。"],
+      ["江戸幕府が終わり、近代国家づくりが始まった改革は？", "明治維新", "明治時代の始まりにつながります。", "明治維新によって近代国家づくりが進みました。"],
+      ["国の政治の最終的な決定権が国民にある考え方は？", "国民主権", "日本国憲法の三原則の一つです。", "国民主権とは、政治の最終的な決定権を国民が持つことです。"],
+    ],
+    j1: [
+      ["世界で最も面積が大きい大陸は？", "ユーラシア大陸", "日本もこの大陸の東側にあります。", "世界で最も大きい大陸はユーラシア大陸です。"],
+      ["経度0度の基準となる線は？", "本初子午線", "イギリスのグリニッジを通ります。", "経度0度の線を本初子午線といいます。"],
+      ["緯度0度の線は？", "赤道", "地球を南北に分ける線です。", "緯度0度の線を赤道といいます。"],
+      ["季節によって吹く向きが変わる風は？", "季節風", "モンスーンとも呼ばれます。", "季節で向きが変わる風を季節風といいます。"],
+      ["チグリス川・ユーフラテス川流域で栄えた文明は？", "メソポタミア文明", "現在のイラク付近です。", "両河川の流域ではメソポタミア文明が栄えました。"],
+      ["十七条の憲法を定めたとされる人物は？", "聖徳太子", "冠位十二階も定めたとされます。", "聖徳太子は十七条の憲法を定めたとされます。"],
+      ["将軍と御家人を結んだ『ご恩』と対になるものは？", "奉公", "御家人が将軍のために働くことです。", "鎌倉時代の主従関係は、ご恩と奉公で結ばれました。"],
+      ["三権分立を説いたフランスの思想家は？", "モンテスキュー", "『法の精神』を著しました。", "モンテスキューは三権分立を説きました。"],
+    ],
+  },
+  science: {
+    g4: [
+      ["空気を温めると、体積はどうなる？", "大きくなる", "温められた空気は広がります。", "空気は温めると体積が大きくなります。"],
+      ["水がふっとうする温度は、およそ何℃？", "100℃", "水面からあわが出続ける温度です。", "標準的な気圧では水は約100℃でふっとうします。"],
+      ["水がこおり始める温度は、およそ何℃？", "0℃", "温度計の目盛りの基準の一つです。", "水は約0℃でこおり始めます。"],
+      ["乾電池2個を直列につなぐと、豆電球はどうなる？", "明るくなる", "乾電池の向きをそろえてつなぎます。", "直列つなぎでは電流が強くなり、豆電球は明るくなります。"],
+      ["電気が流れるために必要な回路の形は？", "一つの輪", "途中が切れていると電気は流れません。", "回路が一つの輪のようにつながると電気が流れます。"],
+      ["ベガ・アルタイル・デネブを結んだ形は？", "夏の大三角", "夏の夜空で見つけやすい星の並びです。", "3つの星を結ぶと夏の大三角になります。"],
+      ["月が明るく見える理由は？", "太陽の光を反射するから", "月自身が光を作っているわけではありません。", "月は太陽の光を反射して明るく見えます。"],
+      ["うでを曲げるとき、内側の筋肉はどうなる？", "縮む", "筋肉は縮むことで骨を動かします。", "うでを曲げるとき、内側の筋肉は縮みます。"],
+    ],
+    g5: [
+      ["種子から最初に出てくる葉を何という？", "子葉", "種子の中にある葉です。", "発芽して最初に出る葉を子葉といいます。"],
+      ["花粉がめしべの先につくことを何という？", "受粉", "実や種子ができるために必要です。", "花粉がめしべの先につくことを受粉といいます。"],
+      ["日本付近の雲は、多くの場合どちらからどちらへ動く？", "西から東", "天気も同じ向きに変わることが多いです。", "日本付近の雲は多くの場合、西から東へ動きます。"],
+      ["台風の中心に近づくと、風は一般にどうなる？", "強くなる", "中心付近ほど注意が必要です。", "一般に台風の中心に近いほど風は強くなります。"],
+      ["食塩水を温めると、食塩がとける量はどうなる？", "少し増える", "物質によって増え方は異なります。", "食塩は水温が上がると、とける量が少し増えます。"],
+      ["物が水にとけた後、全体の重さはどうなる？", "変わらない", "見えなくなっても物は水の中にあります。", "物が水にとけても、全体の重さは変わりません。"],
+      ["ふりこの1往復の時間を変える条件は？", "糸の長さ", "おもりの重さではありません。", "ふりこの長さを変えると、1往復の時間が変わります。"],
+      ["川の上流に多い石の特徴は？", "大きく角ばっている", "流される時間がまだ短い場所です。", "上流の石は大きく角ばったものが多く見られます。"],
+    ],
+    g6: [
+      ["植物が日光を受けてでんぷんを作るはたらきは？", "光合成", "葉で行われます。", "植物が日光を使って養分を作るはたらきを光合成といいます。"],
+      ["物が燃え続けるのを助ける気体は？", "酸素", "空気中に約21%含まれます。", "酸素には物を燃やすはたらきがあります。"],
+      ["はく息に、吸う空気より多く含まれる気体は？", "二酸化炭素", "石灰水を白くにごらせます。", "はく息には吸う空気より二酸化炭素が多く含まれます。"],
+      ["血液を全身へ送り出す臓器は？", "心臓", "胸の中で拍動しています。", "心臓は血液を全身へ送り出します。"],
+      ["消化された養分を主に吸収する臓器は？", "小腸", "内側に多くのひだがあります。", "養分は主に小腸から吸収されます。"],
+      ["月が太陽とほぼ同じ方向にあり、見えにくいときの月は？", "新月", "満月とは反対の位置関係です。", "月が太陽と同じ方向にあるころを新月といいます。"],
+      ["てこがつり合うときに等しくなるものは？", "力×支点からの距離", "力の大きさだけでは決まりません。", "左右の『力×支点からの距離』が等しいと、てこはつり合います。"],
+      ["手回し発電機で起こるエネルギーの変化は？", "運動から電気", "手で回す動きが電気になります。", "手回し発電機は運動エネルギーを電気エネルギーに変えます。"],
+    ],
+    j1: [
+      ["植物の細胞にあり、動物の細胞にはないつくりは？", "細胞壁", "細胞の外側を囲む丈夫なつくりです。", "細胞壁は植物の細胞に見られるつくりです。"],
+      ["顕微鏡の倍率は、接眼レンズと対物レンズの倍率をどうする？", "かけ合わせる", "10倍と40倍なら400倍です。", "顕微鏡の倍率は接眼レンズと対物レンズの倍率をかけて求めます。"],
+      ["火のついた線香を入れると激しく燃える気体は？", "酸素", "物を燃やすはたらきがあります。", "酸素の中では線香が激しく燃えます。"],
+      ["石灰水を白くにごらせる気体は？", "二酸化炭素", "呼吸でも出る気体です。", "二酸化炭素を通すと石灰水は白くにごります。"],
+      ["物質が状態変化するとき、質量はどうなる？", "変わらない", "形や体積が変わっても物質の量は同じです。", "状態変化の前後で物質の質量は変わりません。"],
+      ["光が鏡で反射するとき、入射角と等しい角は？", "反射角", "法線を基準に測ります。", "光の反射では入射角と反射角が等しくなります。"],
+      ["音の高さを決めるものは？", "振動数", "1秒間に振動する回数です。", "振動数が多いほど高い音になります。"],
+      ["力の大きさを表す単位は？", "ニュートン", "記号はNです。", "力の大きさはニュートン（N）で表します。"],
+    ],
+  },
+  japanese: {
+    g4: [
+      ["「博物館」の読み方は？", "はくぶつかん", "いろいろな資料を展示する場所です。", "「博物館」は「はくぶつかん」と読みます。"],
+      ["「協力」の読み方は？", "きょうりょく", "力を合わせることです。", "「協力」は「きょうりょく」と読みます。"],
+      ["「季節」の読み方は？", "きせつ", "春・夏・秋・冬のことです。", "「季節」は「きせつ」と読みます。"],
+      ["「連続」の読み方は？", "れんぞく", "続けて起こることです。", "「連続」は「れんぞく」と読みます。"],
+      ["ことわざ「石の上にも□」に入ることばは？", "三年", "辛抱強く続ける大切さを表します。", "ことわざは「石の上にも三年」です。"],
+      ["ことわざ「急がば□」に入ることばは？", "回れ", "急ぐときほど安全な方法を選ぶという意味です。", "ことわざは「急がば回れ」です。"],
+      ["四字熟語「一石□」に入ることばは？", "二鳥", "一つの行動で二つの利益を得ることです。", "四字熟語は「一石二鳥」です。"],
+      ["文「相手の気持ちや場の□を読む」に入ることばは？", "空気", "その場の雰囲気という意味で使います。", "「場の空気を読む」という表現です。"],
+    ],
+    g5: [
+      ["「提案」の読み方は？", "ていあん", "考えを出すことです。", "「提案」は「ていあん」と読みます。"],
+      ["「責任」の読み方は？", "せきにん", "引き受けた役目を果たすことです。", "「責任」は「せきにん」と読みます。"],
+      ["「賛成」の読み方は？", "さんせい", "意見に同意することです。", "「賛成」は「さんせい」と読みます。"],
+      ["「適切」の読み方は？", "てきせつ", "その場によく合っていることです。", "「適切」は「てきせつ」と読みます。"],
+      ["ことわざ「馬の耳に□」に入ることばは？", "念仏", "何を言っても効き目がないという意味です。", "ことわざは「馬の耳に念仏」です。"],
+      ["四字熟語「十人□」に入ることばは？", "十色", "人にはそれぞれ違いがあるという意味です。", "四字熟語は「十人十色」です。"],
+      ["四字熟語「温故□」に入ることばは？", "知新", "昔を学び、新しい知識を得ることです。", "四字熟語は「温故知新」です。"],
+      ["ことわざ「失敗は□のもと」に入ることばは？", "成功", "失敗から学ぶ大切さを表します。", "ことわざは「失敗は成功のもと」です。"],
+    ],
+    g6: [
+      ["「尊敬」の読み方は？", "そんけい", "相手を敬うことです。", "「尊敬」は「そんけい」と読みます。"],
+      ["「警告」の読み方は？", "けいこく", "危険などを前もって知らせることです。", "「警告」は「けいこく」と読みます。"],
+      ["「臨時」の読み方は？", "りんじ", "決まった時ではなく、その時だけのことです。", "「臨時」は「りんじ」と読みます。"],
+      ["「困難」の読み方は？", "こんなん", "物事をするのが難しいことです。", "「困難」は「こんなん」と読みます。"],
+      ["ことわざ「継続は□なり」に入ることばは？", "力", "続けることの大切さを表します。", "ことわざは「継続は力なり」です。"],
+      ["ことわざ「百聞は□にしかず」に入ることばは？", "一見", "聞くだけでなく自分で見る方がよいという意味です。", "ことわざは「百聞は一見にしかず」です。"],
+      ["四字熟語「有言□」に入ることばは？", "実行", "言ったことを必ず行うことです。", "四字熟語は「有言実行」です。"],
+      ["四字熟語「試行□」に入ることばは？", "錯誤", "試しながら失敗を重ね、解決に近づくことです。", "四字熟語は「試行錯誤」です。"],
+    ],
+    j1: [
+      ["「抽象」の読み方は？", "ちゅうしょう", "具体的な形から共通点を取り出した考えです。", "「抽象」は「ちゅうしょう」と読みます。"],
+      ["「論理」の読み方は？", "ろんり", "筋道を立てた考え方です。", "「論理」は「ろんり」と読みます。"],
+      ["「推敲」の読み方は？", "すいこう", "文章を何度も練り直すことです。", "「推敲」は「すいこう」と読みます。"],
+      ["「著者」の読み方は？", "ちょしゃ", "その文章や本を書いた人です。", "「著者」は「ちょしゃ」と読みます。"],
+      ["文「雨が強くなった。□、試合は中止になった」に入る接続語は？", "そのため", "前の内容が原因、後ろが結果です。", "原因と結果をつなぐ「そのため」が合います。"],
+      ["文「身近な再利用品、□、再生紙などがある」に入ることばは？", "たとえば", "具体例を挙げるときの接続語です。", "具体例を示す「たとえば」が合います。"],
+      ["「鳥が空を飛ぶ」の「飛ぶ」の品詞は？", "動詞", "動作を表し、言い切りがウ段の音です。", "「飛ぶ」は動作を表す動詞です。"],
+      ["「静かな教室」の「静かな」の品詞は？", "形容動詞", "言い切りの形は「静かだ」です。", "「静かな」は形容動詞「静かだ」の連体形です。"],
+    ],
+  },
+};
+
+function createKnowledgeQuestions(kind) {
+  const grade = learningState.profile.grade;
+  const items = knowledgeContent[kind][grade].map(([text, answer, hint, explanation], index) => ({
+    id: `${kind}-${grade}-${index}`,
+    text,
+    answer,
+    hint,
+    explanation,
+  }));
+  const alternatives = items.map(item => item.answer);
+  return shuffle(items).map(item => ({
+    text: item.text,
+    answer: item.answer,
+    choices: answerChoices(item.answer, alternatives),
+    hint: item.hint,
+    explanation: item.explanation,
+    item,
+  }));
+}
+
 function updateMastery(question, isCleanCorrect) {
   if (!question.item || !learningState) return;
   const record = learningState.mastery[question.item.id] || { attempts: 0, correct: 0, streak: 0, nextReviewAt: todayKey() };
@@ -1694,7 +1849,8 @@ function beginStudy(kind, options) {
   studyModeEl.hidden = false;
   const questions = kind === "english" ? createEnglishQuestions(options.direction)
     : kind === "math" ? Array.from({ length: 10 }, () => makeMathQuestion(options.courseId))
-      : createHundredQuestions(options.size, options.operation);
+      : kind === "hundred" ? createHundredQuestions(options.size, options.operation)
+        : createKnowledgeQuestions(kind);
   studySession = {
     kind, options, questions, index: 0, correct: 0, combo: 0, maxCombo: 0, misses: 0,
     answered: [], input: "", startedAt: performance.now(), elapsed: 0, locked: false,
@@ -1759,9 +1915,14 @@ function renderStudyQuestion() {
   studyCorrectEl.textContent = `正解 ${studySession.correct}`;
   studyComboEl.textContent = `コンボ ${studySession.combo}`;
   studyProgressEl.style.width = `${(studySession.index / studySession.questions.length) * 100}%`;
-  studyKickerEl.textContent = studySession.kind === "english" ? "えらんで答えよう" : studySession.kind === "hundred" ? "このマスをうめよう" : "4つからえらぼう";
-  studyQuestionEl.textContent = `${question.text} = ?`;
-  if (studySession.kind === "english") studyQuestionEl.textContent = question.text;
+  const knowledgeKickers = { japanese: "漢字・ことば", science: "自然のしくみ", social: "地理・歴史・くらし" };
+  studyKickerEl.textContent = knowledgeKickers[studySession.kind]
+    || (studySession.kind === "english" ? "えらんで答えよう" : studySession.kind === "hundred" ? "このマスをうめよう" : "4つからえらぼう");
+  const isKnowledge = Boolean(knowledgeKickers[studySession.kind]);
+  studyQuestionEl.classList.toggle("knowledge-question", isKnowledge);
+  studyQuestionEl.textContent = studySession.kind === "math" || studySession.kind === "hundred"
+    ? `${question.text} = ?`
+    : question.text;
   studyExampleEl.hidden = !question.example;
   studyExampleEl.textContent = question.example || "";
   studyFeedbackEl.textContent = studySession.kind === "hundred" ? "テンキーで答えてね" : "こたえをえらぼう";
@@ -1860,7 +2021,14 @@ function finishStudy() {
   studyModeEl.hidden = true;
   appEl.classList.add("title-mode");
   resultEl.classList.add("show");
-  resultTitle.textContent = session.kind === "english" ? "英語チャレンジ" : session.kind === "hundred" ? `${session.options.size}マス計算` : "算数・数学チャレンジ";
+  const resultTitles = {
+    math: "算数・数学チャレンジ",
+    english: "英語チャレンジ",
+    japanese: "国語チャレンジ",
+    science: "理科チャレンジ",
+    social: "社会チャレンジ",
+  };
+  resultTitle.textContent = session.kind === "hundred" ? `${session.options.size}マス計算` : resultTitles[session.kind];
   resultTime.textContent = formatTime(session.elapsed);
   resultText.innerHTML = `正解 ${session.correct}/${session.questions.length}<br>正答率 ${Math.round((session.correct / session.questions.length) * 100)}%<br>${session.misses ? `まちがい ${session.misses}回` : "ノーミス！"}`;
   resultBadges.innerHTML = [
@@ -1934,8 +2102,15 @@ function initializeLearningHub() {
     showTitle();
   }));
   document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => {
-    const panel = button.dataset.openPanel === "math" ? mathSelectEl : button.dataset.openPanel === "hundred" ? hundredSelectEl : englishSelectEl;
-    showSubjectPanel(panel);
+    const panels = {
+      math: mathSelectEl,
+      hundred: hundredSelectEl,
+      english: englishSelectEl,
+      japanese: japaneseSelectEl,
+      science: scienceSelectEl,
+      social: socialSelectEl,
+    };
+    showSubjectPanel(panels[button.dataset.openPanel]);
   }));
   document.querySelectorAll("[data-panel-home]").forEach(button => button.addEventListener("click", showTitle));
   document.getElementById("showRecords").addEventListener("click", showRecords);
@@ -1956,6 +2131,9 @@ function initializeLearningHub() {
     const button = event.target.closest("[data-english-direction]");
     if (button) beginStudy("english", { direction: button.dataset.englishDirection });
   });
+  document.querySelectorAll("[data-knowledge-kind]").forEach(button => button.addEventListener("click", () => {
+    beginStudy(button.dataset.knowledgeKind, {});
+  }));
   studyChoicesEl.addEventListener("click", event => {
     const button = event.target.closest("[data-study-answer]");
     if (button) checkStudyAnswer(button.dataset.studyAnswer);

@@ -2204,9 +2204,25 @@
     }
 
     .subject-card.math { background: #dbe6ff; }
+    .subject-card.japanese { background: var(--md-sys-color-tertiary-container); }
+    .subject-card.science { background: #cde7ff; }
+    .subject-card.social { background: #d9e7cb; }
     .subject-card.hundred { background: #ffdea8; }
     .subject-card.english { background: #ccebd8; }
     .subject-card.karuta { background: var(--md-sys-color-primary-container); }
+
+    .study-question.knowledge-question {
+      max-width: 30ch;
+      font-size: clamp(20px, 6.4vw, 34px);
+      line-height: 1.35;
+      text-wrap: balance;
+    }
+
+    @media (max-width: 759px) {
+      .subject-card.karuta {
+        grid-column: 1 / -1;
+      }
+    }
 
     .home-actions {
       gap: 8px;
@@ -2281,6 +2297,10 @@
 
       .subject-card {
         min-height: 116px;
+      }
+
+      .subject-card.karuta {
+        grid-column: auto;
       }
     }
 

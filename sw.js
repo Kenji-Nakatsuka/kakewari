@@ -1,9 +1,9 @@
-const CACHE_NAME = "manabi-adventure-v20260725-m3-home-01";
+const CACHE_NAME = "manabi-adventure-v20260725-subjects-01";
 const ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=20260725-m3-home-01",
-  "./script.js?v=20260725-m3-home-01",
+  "./style.css?v=20260725-subjects-01",
+  "./script.js?v=20260725-subjects-01",
   "./manifest.webmanifest?v=20260717-learning-01",
   "./icon.svg?v=20260717-learning-01",
   "./icon-192.png",

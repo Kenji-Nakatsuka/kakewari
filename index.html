@@ -15,7 +15,7 @@
   <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="preload" href="assets/chara01_kurage.png" as="image" />
   <link rel="preload" href="assets/chara02_fugu.png" as="image" />
-  <link rel="stylesheet" href="style.css?v=20260725-m3-home-01" />
+  <link rel="stylesheet" href="style.css?v=20260725-subjects-01" />
 </head>
 <body>
   <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
@@ -65,8 +65,11 @@
         </div>
         <div class="subject-grid">
           <button class="subject-card math" data-open-panel="math" type="button"><span aria-hidden="true">➗</span><b>算数・数学</b><small>学年にあわせて練習</small></button>
-          <button class="subject-card hundred" data-open-panel="hundred" type="button"><span aria-hidden="true">100</span><b>100マス</b><small>すばやく正確に</small></button>
+          <button class="subject-card japanese" data-open-panel="japanese" type="button"><span aria-hidden="true">あ</span><b>国語</b><small>漢字・ことばの虫食い</small></button>
+          <button class="subject-card science" data-open-panel="science" type="button"><span aria-hidden="true">理</span><b>理科</b><small>自然のしくみを考える</small></button>
+          <button class="subject-card social" data-open-panel="social" type="button"><span aria-hidden="true">社</span><b>社会</b><small>地理・歴史・くらし</small></button>
           <button class="subject-card english" data-open-panel="english" type="button"><span aria-hidden="true">ABC</span><b>英語</b><small>ことばをふやそう</small></button>
+          <button class="subject-card hundred" data-open-panel="hundred" type="button"><span aria-hidden="true">100</span><b>100マス</b><small>すばやく正確に</small></button>
           <button class="subject-card karuta" data-karuta-menu type="button"><span aria-hidden="true">札</span><b>百人一首</b><small>上の句で取り札</small></button>
         </div>
       </section>
@@ -157,6 +160,42 @@
         <p>新しいことば7問＋ふくしゅう3問</p>
       </div>
       <div class="subject-course-list compact-options" id="englishCourseList"></div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel subject-select" id="japaneseSelect" hidden>
+      <div>
+        <p class="eyebrow" id="japaneseSelectGrade">小学4年生</p>
+        <h2>国語</h2>
+        <p>漢字の読みと、ことばの虫食い8問</p>
+      </div>
+      <div class="subject-course-list compact-options">
+        <button class="course-choice" data-knowledge-kind="japanese" type="button"><span>あ</span><b>ことば・漢字ミックス</b><small>文に合う答えをえらぼう</small></button>
+      </div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel subject-select" id="scienceSelect" hidden>
+      <div>
+        <p class="eyebrow" id="scienceSelectGrade">小学4年生</p>
+        <h2>理科</h2>
+        <p>学年にあわせた自然と科学の8問</p>
+      </div>
+      <div class="subject-course-list compact-options">
+        <button class="course-choice" data-knowledge-kind="science" type="button"><span>理</span><b>理科まとめ</b><small>4つから答えをえらぼう</small></button>
+      </div>
+      <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
+    </section>
+
+    <section class="panel subject-select" id="socialSelect" hidden>
+      <div>
+        <p class="eyebrow" id="socialSelectGrade">小学4年生</p>
+        <h2>社会</h2>
+        <p>学年にあわせた地理・歴史・くらしの8問</p>
+      </div>
+      <div class="subject-course-list compact-options">
+        <button class="course-choice" data-knowledge-kind="social" type="button"><span>社</span><b>社会まとめ</b><small>4つから答えをえらぼう</small></button>
+      </div>
       <button class="home-btn" data-panel-home type="button">ホームに戻る</button>
     </section>
 
@@ -313,6 +352,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260725-m3-home-01"></script>
+  <script src="script.js?v=20260725-subjects-01"></script>
 </body>
 </html>
