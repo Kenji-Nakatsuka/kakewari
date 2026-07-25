@@ -677,6 +677,7 @@ function showRankingScreen() {
   rankingScreen.hidden = false;
   gameEls.forEach(el => el.hidden = true);
   renderTitleRanking();
+  showPrimaryNavigation("learning");
 }
 
 function startLevel(nextLevel) {
@@ -694,6 +695,7 @@ function startLevel(nextLevel) {
   rankingScreen.hidden = true;
   gameEls.forEach(el => el.hidden = false);
   document.querySelector('[data-action="sign"]').disabled = !courses[level].type;
+  showPrimaryNavigation("learning");
   resetSet();
 }
 
@@ -898,6 +900,7 @@ function showKarutaSelect() {
   karutaMode.hidden = true;
   karutaSelect.hidden = false;
   gameEls.forEach(el => el.hidden = true);
+  showPrimaryNavigation("learning");
 }
 
 function showKarutaError(message) {
@@ -911,6 +914,7 @@ function startKaruta(count) {
   soundEnabled = soundOn;
   ensureAudio();
   hideLearningPanels();
+  showPrimaryNavigation("learning");
   appEl.classList.add("karuta-play-mode");
   appEl.classList.remove("karuta-result-mode");
   karutaQuestionCount = count;
@@ -1446,7 +1450,6 @@ function hideLearningPanels() {
     .map(id => document.getElementById(id))
     .filter(Boolean)
     .forEach(el => { el.hidden = true; });
-  hidePrimaryNavigation();
   stopStudyTimer();
 }
 
@@ -1484,6 +1487,8 @@ function showGradeScreen() {
   resultEl.classList.remove("show");
   appEl.classList.add("title-mode");
   gradeScreenEl.hidden = false;
+  if (learningState?.profile.grade) showPrimaryNavigation("profile");
+  else hidePrimaryNavigation();
 }
 
 function showProfile() {
@@ -1510,6 +1515,7 @@ function showSubjectPanel(panel) {
   appEl.classList.add("title-mode");
   panel.hidden = false;
   legacyCoursesEl.hidden = true;
+  showPrimaryNavigation("learning");
 }
 
 function randomItem(items) {
@@ -1989,6 +1995,7 @@ function beginStudy(kind, options) {
   gameEls.forEach(el => { el.hidden = true; });
   karutaMode.hidden = true;
   studyModeEl.hidden = false;
+  showPrimaryNavigation("learning");
   const questions = kind === "english" ? createEnglishQuestions(options.direction)
     : kind === "math" ? Array.from({ length: 10 }, () => makeMathQuestion(options.courseId))
       : kind === "hundred" ? createHundredQuestions(options.size, options.operation)
