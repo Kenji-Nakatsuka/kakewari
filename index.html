@@ -15,7 +15,7 @@
   <link rel="preload" href="assets/title-hero.png" as="image" />
   <link rel="preload" href="assets/chara01_kurage.png" as="image" />
   <link rel="preload" href="assets/chara02_fugu.png" as="image" />
-  <link rel="stylesheet" href="style.css?v=20260717-learning-01" />
+  <link rel="stylesheet" href="style.css?v=20260725-m3-home-01" />
 </head>
 <body>
   <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音のオン・オフ">🔊</button>
@@ -38,28 +38,38 @@
     </section>
 
     <section class="panel title-screen" id="titleScreen">
-      <div>
-        <p class="eyebrow">毎日ちょっとずつ、強くなる</p>
-        <h1>まなびの冒険</h1>
-        <p>きょうは何をやってみる？</p>
-      </div>
-      <div class="character-stage" aria-label="キャラクター">
-        <button class="character-button character-left" type="button" aria-label="くらげのキャラクター">
-          <img src="assets/chara01_kurage.png" alt="" />
-        </button>
-        <button class="character-button character-right" type="button" aria-label="ふぐのキャラクター">
-          <img src="assets/chara02_fugu.png" alt="" />
-        </button>
-      </div>
-      <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
-      <div class="home-status" id="homeStatus" aria-label="学習の記録"></div>
-      <button class="mission-card" id="missionCard" type="button" aria-label="今日のミッション"></button>
-      <div class="subject-grid" aria-label="教科を選ぶ">
-        <button class="subject-card math" data-open-panel="math" type="button"><span>➗</span><b>算数・数学</b><small>学年にあわせて練習</small></button>
-        <button class="subject-card hundred" data-open-panel="hundred" type="button"><span>💯</span><b>100マス</b><small>すばやく正確に</small></button>
-        <button class="subject-card english" data-open-panel="english" type="button"><span>ABC</span><b>英語</b><small>ことばをふやそう</small></button>
-        <button class="subject-card karuta" data-karuta-menu type="button"><span>札</span><b>百人一首</b><small>上の句で取り札</small></button>
-      </div>
+      <header class="home-hero">
+        <div class="home-copy">
+          <p class="eyebrow">毎日ちょっとずつ、強くなる</p>
+          <h1>まなびの冒険</h1>
+          <p>きょうは何をやってみる？</p>
+        </div>
+        <div class="character-stage" aria-label="キャラクター">
+          <button class="character-button character-left" type="button" aria-label="くらげのキャラクター">
+            <img src="assets/chara01_kurage.png" alt="" />
+          </button>
+          <button class="character-button character-right" type="button" aria-label="ふぐのキャラクター">
+            <img src="assets/chara02_fugu.png" alt="" />
+          </button>
+        </div>
+      </header>
+      <section class="home-progress" aria-label="現在の学習状況">
+        <div class="xp-card" id="xpCard" aria-label="けいさんレベル"></div>
+        <div class="home-status" id="homeStatus" aria-label="学習の記録"></div>
+      </section>
+      <div class="mission-card" id="missionCard"></div>
+      <section class="learning-menu" aria-labelledby="learningMenuTitle">
+        <div class="section-heading">
+          <h2 id="learningMenuTitle">学習メニュー</h2>
+          <span>教科をえらぶ</span>
+        </div>
+        <div class="subject-grid">
+          <button class="subject-card math" data-open-panel="math" type="button"><span aria-hidden="true">➗</span><b>算数・数学</b><small>学年にあわせて練習</small></button>
+          <button class="subject-card hundred" data-open-panel="hundred" type="button"><span aria-hidden="true">100</span><b>100マス</b><small>すばやく正確に</small></button>
+          <button class="subject-card english" data-open-panel="english" type="button"><span aria-hidden="true">ABC</span><b>英語</b><small>ことばをふやそう</small></button>
+          <button class="subject-card karuta" data-karuta-menu type="button"><span aria-hidden="true">札</span><b>百人一首</b><small>上の句で取り札</small></button>
+        </div>
+      </section>
       <div class="course-groups legacy-course-groups" id="legacyCourses" aria-label="旧計算チャレンジ" hidden>
         <section class="course-group">
           <h2>小学生</h2>
@@ -112,8 +122,8 @@
         </section>
       </div>
       <div class="home-actions">
-        <button class="ranking-toggle" id="showRecords" type="button">きろくを見る</button>
-        <button class="text-action" id="changeGrade" type="button">学年を変える</button>
+        <button class="ranking-toggle" id="showRecords" type="button"><span aria-hidden="true">★</span>きろくを見る</button>
+        <button class="text-action" id="changeGrade" type="button"><span aria-hidden="true">↻</span>学年を変える</button>
       </div>
     </section>
 
@@ -303,6 +313,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260717-learning-01"></script>
+  <script src="script.js?v=20260725-m3-home-01"></script>
 </body>
 </html>

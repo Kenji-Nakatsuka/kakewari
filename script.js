@@ -347,13 +347,14 @@ function renderXpCard() {
   const xp = readXp();
   const { levelIndex, rank, next, progress } = rankInfo(xp);
   const nextText = next ? `つぎまで あと${next.xp - xp}pt` : "さいこうレベル！";
+  const progressValue = Math.round(progress * 100);
   xpCard.innerHTML = `
     <div class="xp-head">
       <span class="xp-emoji">${rank.emoji}</span>
       <span class="xp-title">Lv.${levelIndex + 1} ${rank.title}</span>
       <span class="xp-points">${xp}pt</span>
     </div>
-    <div class="xp-bar"><span style="width:${Math.round(progress * 100)}%"></span></div>
+    <div class="xp-bar" role="progressbar" aria-label="次のレベルまでの進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progressValue}"><span style="width:${progressValue}%"></span></div>
     <div class="xp-next">${nextText}</div>`;
 }
 
